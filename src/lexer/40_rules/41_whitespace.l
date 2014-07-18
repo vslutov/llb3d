@@ -1,0 +1,2 @@
+{whitespace}	{ /* Nothing */ }
+";"[^\n]*		{ /* Comment */ }
