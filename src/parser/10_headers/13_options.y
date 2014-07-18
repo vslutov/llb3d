@@ -1,4 +1,4 @@
 %locations
-%pure_parser
+%pure-parser
 
 %start PROGRAM
