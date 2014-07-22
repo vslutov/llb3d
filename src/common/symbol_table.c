@@ -1,13 +1,13 @@
 #include "helpers/symbol_table.h"
 
 char *char_buffer;
-size_t char_buffer_size = 20 * 1000;
+size_t char_buffer_half_size = 10 * 1000;
 
 Symbol *hashtable;
 size_t hashtable_size = 1000;
 
-void 
-init_symbol_table (void) 
+void
+init_symbol_table (void)
 {
 	char_buffer = (char *) malloc ( char_buffer_size );
 	hashtable = (Symbol *) malloc ( hashtable_size * sizeof(Symbol) );
