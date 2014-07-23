@@ -1,29 +1,30 @@
 #ifndef SYMBOL_TABLE_H
 #define SYMBOL_TABLE_H
 
+#include "helpers/global_types.h"
+
 #include <stdlib.h>
 
 typedef enum
 {
-	SYMBOL_LOCAL,
-	SYMBOL_GLOBAL,
-	SYMBOL_FUNCTION,
-	SYMBOL_TYPE
+  SYMBOL_LOCAL,
+  SYMBOL_GLOBAL,
+  SYMBOL_FUNCTION,
+  SYMBOL_TYPE
 } Symbol_type;
 
-typedef struct
+typedef struct symbol_struct
 {
-	char *string;
-	size_t hash;
-} Symbol;
+  Symbol_type type;
+  String name;
+} *Symbol;
 
-void 
-init_symbol_table (void);
+struct node;
 
-Symbol *
-search_symbol (char *string, size_t length);
+typedef struct node **SymbolTable;
 
-void
-register_symbol (char *string, size_t length, Symbol_type symbol_enum);
+Symbol
+GetSymbol (String s, SymbolTable root);
 
 #endif
+

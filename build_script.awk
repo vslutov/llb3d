@@ -17,7 +17,7 @@
 		print PREFIX "_SOURCE_FOLDERS = $(wildcard $(" PREFIX "_SOURCE_DIR)/*/)"
 		print PREFIX "_BUILD_FOLDERS  = $(subst    $(" PREFIX "_SOURCE_DIR)/, $(" PREFIX "_BUILD_DIR)/, $(" PREFIX "_SOURCE_FOLDERS))"
 
-		print "$(" PREFIX "_BUILD_FOLDERS) : $(" PREFIX "_BUILD_DIR)/%/ : $(BUILD_DIR)"
+		print "$(" PREFIX "_BUILD_FOLDERS) : $(" PREFIX "_BUILD_DIR)/% : $(" PREFIX "_BUILD_DIR)"
 		print "		mkdir -p $@"
 
 

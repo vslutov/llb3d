@@ -1,6 +1,6 @@
-#include <stdio.h>
+#include "parser.h"
 
-int yyparse (void);
+#include <stdio.h>
 
 int main()
 {

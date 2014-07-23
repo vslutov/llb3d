@@ -1,5 +1,5 @@
 %{
-	#include<stdio.h>
-	
 	#include "helpers/yyerror.h"
+  #include "parser.h"
+  #include "lexer.h"
 %}
