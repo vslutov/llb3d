@@ -1,1 +1,2 @@
-{number}		{ yylval->integer = atoi(yytext); return NUMBER; }
+{number}		{ yylval->integer_val = atoi(yytext);
+              return INTEGER_VALUE; }

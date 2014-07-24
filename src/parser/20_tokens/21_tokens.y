@@ -1,5 +1,8 @@
-%token <integer> NUMBER
-%token <string> ID
+%token <integer_val> INTEGER_VALUE
+%token <float_val> FLOAT_VALUE
+%token <string_val> STRING_VALUE
+
+%token <name> ID
 
 %token TOKEN_EOL
 
