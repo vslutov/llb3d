@@ -32,6 +32,7 @@ keywords = [
     'SAR', 'SELECT', 'SHL', 'SHR', 'STEP', 'STR', 'THEN', 'TO', 'TRUE',
     'TYPE', 'UNTIL', 'WEND', 'WHILE', 'XOR', 'INCLUDE'
 ]
+
 # List of token names.   This is always required
 tokens = [
     'FLOATVAL', 'INTVAL', 'STRVAL',
@@ -48,7 +49,6 @@ def find_column(lexpos):
 def position(t):
     return '{line}:{col}'.format(line=t.lineno,
                                  col=find_column(t.lexpos))
-
 
 # A string containing ignored characters (spaces and tabs)
 t_ignore  = ' \t\r\f\v'

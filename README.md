@@ -39,8 +39,8 @@ identifiers (variables, function names, labels, etc.):
 
 ### Comments
 
-You add comments to your programs using the ';' character.
-Everything following the ';' until the end of the line will be ignored,
+You add comments to your programs using the `;` character.
+Everything following the `;` until the end of the line will be ignored,
 this is useful for commenting your code - so you can always look through and
 follow each line in a logical manner.
 
@@ -120,11 +120,11 @@ String constants must be surrounded by quotation marks, for example:
 
     "This is a string constant".
 
-The 'Const' keyword is used to assign an identifier to a constant. For example:
+The `Const` keyword is used to assign an identifier to a constant. For example:
 
     Const width = 640, height = 480
 
-You can then use the more readable 'width' and 'height' throughout your
+You can then use the more readable `width` and `height` throughout your
 program instead of `640` and `480`.
 
 Also, if you ever decide to change the width and height values,
@@ -169,13 +169,13 @@ If you don't supply a type tag the first time a variable is used,
 the variable defaults to an integer.
 
 It is illegal to use the same variable name with a different type.
-For example, if you already have an integer variable called 'name%',
-it is illegal to also have a string variable called 'name$'
+For example, if you already have an integer variable called `name%`,
+it is illegal to also have a string variable called `name$`
 
 #### Setting Variables
 
 The `=` keyword is used to assign a value to a variable. For example:
-`score% = 0` assigns the value '0' to the integer variable 'score'.
+`score% = 0` assigns the value `0` to the integer variable `score`.
 
 #### Variable Scope
 
@@ -185,14 +185,14 @@ in a program a variable may be used.
 - Global variables can be used from anywhere in the program.
 - Local variables can only be used within the function they are created in.
 
-The 'Global' keyword is used to define one or more global variables.
+The `Global` keyword is used to define one or more global variables.
 For example:
 
     Global Score = 0, Lives = 3, Player_up = 1
 
 ... defines 3 global variables.
 
-Similarly, 'Local' is used to define local variables:
+Similarly, `Local` is used to define local variables:
 
     Local temp_x = x, temp_y = y
 
@@ -300,9 +300,9 @@ The following constructs are available for controlling program flow.
 
     If {expression} Then {statements1} Else {statements2}
 
-  Evaluates the 'If' expression and, if true, executes the 'Then' statements.
-  If false, the 'Else' statement are executed,
-  the 'Else' part is optional - statements are executed until the end of
+  Evaluates the `If` expression and, if true, executes the `Then` statements.
+  If false, the `Else` statement are executed,
+  the `Else` part is optional - statements are executed until the end of
   the line.
 
     If {expression1}
@@ -600,7 +600,7 @@ However, You can move objects around within the type list using Insert. For exam
     Insert mine2 Before mine1
 
 This has the effect of placing the `mine2` object before the `mine1` object in
-the type list. You can also use `After` instead of 'Before' with Insert.
+the type list. You can also use `After` instead of `Before` with Insert.
 
 Here's an example of moving an object to the start of it's type list:
 
@@ -611,10 +611,10 @@ A special form of For...Next allows you to easily iterate over all object of a c
     For mine.MyType = Each MyType
     Next
 
-This will cause the variable 'mine.MyType' to loop through all existing
+This will cause the variable `mine.MyType` to loop through all existing
 objects of cutom type MyType.
 
-Finally, the 'Delete Each' command allows you to delete all objects of a
+Finally, the `Delete Each` command allows you to delete all objects of a
 particular type. For example:
 
     Delete Each MyType
