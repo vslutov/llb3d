@@ -4,22 +4,20 @@
 
 from ply import lex
 
-import re
-
-class g:
+class lex_globals:
     lexer = None
-    parser = None
     error_list = None
     code = None
 
     def input(code):
-        if g.lexer is None:
-            g.lexer = lex.lex()
-        g.error_list = []
+        if lex_globals.lexer is None:
+            lex_globals.lexer = lex.lex()
 
-        g.code = code
-        g.lexer.input(code.upper())
-        g.lexer.lineno = 1
+        lex_globals.lexer.input(code.upper())
+        lex_globals.lexer.lineno = 1
+
+        lex_globals.code = code
+        lex_globals.error_list = []
 
 literals = '#$%(),.\\=\n+-~^*/<>'
 
@@ -40,7 +38,7 @@ tokens = [
 ] + keywords
 
 def find_column(lexpos):
-    last_cr = g.code.rfind('\n', 0, lexpos)
+    last_cr = lex_globals.code.rfind('\n', 0, lexpos)
     if last_cr == -1:
         return lexpos + 1
     else:
@@ -67,7 +65,7 @@ def t_INTVAL(t):
 def t_STRVAL(t):
     r'".*?"'
     length = len(t.value) - 2
-    t.value = g.code[t.lexpos + 1:t.lexpos + 1 + length]
+    t.value = lex_globals.code[t.lexpos + 1:t.lexpos + 1 + length]
     return t
 
 # A regular expression rule with some action code
@@ -86,13 +84,13 @@ def t_newline(t):
 
 # Error handling rule
 def t_error(t):
-    g.error_list.append("Illegal character '{char}' at {position}"
+    lex_globals.error_list.append("Illegal character '{char}' at {position}"
                         .format(char=t.value[0], position=position(t)))
-    g.lexer.skip(1)
+    lex_globals.lexer.skip(1)
 
 def get_lexems(code):
     """Get array of lexems and errors."""
 
-    g.input(code)
-    result = list(g.lexer)
-    return g.error_list, result
+    lex_globals.input(code)
+    result = list(lex_globals.lexer)
+    return lex_globals.error_list, result
