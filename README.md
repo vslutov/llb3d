@@ -1,4 +1,6 @@
-# LLB3D
+# llb3d
+
+llb3d - LLVM Blitz3d implementation
 
 ## License
 
