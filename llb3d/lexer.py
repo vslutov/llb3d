@@ -9,16 +9,6 @@ class lex_globals:
     error_list = None
     code = None
 
-    def input(code):
-        if lex_globals.lexer is None:
-            lex_globals.lexer = lex.lex()
-
-        lex_globals.lexer.input(code.upper())
-        lex_globals.lexer.lineno = 1
-
-        lex_globals.code = code
-        lex_globals.error_list = []
-
 literals = '#$%(),.\\=\n+-~^*/<>'
 
 keywords = [
@@ -86,11 +76,19 @@ def t_newline(t):
 def t_error(t):
     lex_globals.error_list.append("Illegal character '{char}' at {position}"
                         .format(char=t.value[0], position=position(t)))
-    lex_globals.lexer.skip(1)
+    lexer.skip(1)
+
+lexer = lex.lex()
+
+def init(code):
+    lexer.input(code.upper())
+    lexer.lineno = 1
+
+    lex_globals.code = code
+    lex_globals.error_list = []
 
 def get_lexems(code):
     """Get array of lexems and errors."""
-
-    lex_globals.input(code)
-    result = list(lex_globals.lexer)
+    init(code)
+    result = list(lexer)
     return lex_globals.error_list, result
