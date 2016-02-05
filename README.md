@@ -535,7 +535,7 @@ An object is non-existent if it hasn't been initialized yet using
 
     mine.MyType=New MyType
 
-    If mine<>Null
+    If mine <> Null
          Print "exists!"
     Else
          Print "doesn't exist!"
@@ -543,7 +543,7 @@ An object is non-existent if it hasn't been initialized yet using
 
     Delete mine
 
-    If mine<>Null
+    If mine <> Null
          Print "exists!"
     Else
          Print "doesn't exist!"
