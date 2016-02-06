@@ -57,13 +57,19 @@ class Assign(Expression):
 
 class If(Expression):
 
-    def __init__(self, expr, body):
+    def __init__(self, expr, true_branch, false_branch):
         self.expr = expr
-        self.body = Ident(body)
+        self.true_branch = Ident(true_branch)
+        self.false_branch = Ident(false_branch)
 
     def __str__(self):
-        return ('If {expr} Then\n{body}\nEndIf'
-                .format(expr=self.expr, body=self.body))
+        if len(self.false_branch) == 0:
+            return ('IF {expr}\n{true_branch}\nENDIF'
+                    .format(expr=self.expr, true_branch=self.true_branch))
+        else:
+            return ('IF {expr}\n{true_branch}\nELSE\n{false_branch}\nENDIF'
+                    .format(expr=self.expr, true_branch=self.true_branch,
+                            false_branch=self.false_branch))
 
 class DefFunc(Expression):
 
@@ -73,7 +79,7 @@ class DefFunc(Expression):
         self.body = Ident(body)
 
     def __str__(self):
-        return ('Function {name}({args})\n{body}\nEnd Function'
+        return ('FUNCTION {name}({args})\n{body}\nEND FUNCTION'
                 .format(name=self.name, args=self.args, body=self.body))
 
 class CallFunc(Expression):
@@ -107,6 +113,9 @@ class Sequence(Expression):
     def append(self, value):
         if value is not None:
             self.list.append(value)
+
+    def __len__(self):
+        return len(self.list)
 
 class OperatorSequence(Sequence):
     def __str__(self):

@@ -13,7 +13,7 @@ class parser_globals:
 def init():
     parser_globals.error_list = []
 
-start = 'program'
+start = 'body'
 
 def p_empty(p):
     "empty : "
@@ -25,6 +25,13 @@ def p_atom_int(p):
 
 def p_atom_var(p):
     r"""atom : ID"""
+    p[0] = ast.Variable(p[1])
+
+def p_atom_special(p):
+    r"""atom : TRUE
+             | FALSE
+             | NULL
+    """
     p[0] = ast.Variable(p[1])
 
 def p_atom_brackets(p):
@@ -85,9 +92,6 @@ def p_descent(p):
         bitwise : comp
         negation : bitwise
         rvalue : negation
-        operator : funccall
-        operator : if
-        operator : empty
     """
     p[0] = p[1]
 
@@ -95,26 +99,17 @@ def p_operator_assign(p):
     r"""operator : ID '=' rvalue"""
     p[0] = ast.Assign(p[1], p[3])
 
-def p_val_start(p):
-    r"""rvaluelist : rvalue
-        varlist : ID
-    """
-    p[0] = ast.ExpressionSequence(p[1])
-
-def p_append(p):
-    r"""program : program '\n' globop
-        body : body '\n' operator
-        rvaluelist : rvaluelist ',' rvalue
-        varlist : varlist ',' ID
-    """
-    p[0] = p[1].copy()
-    p[0].append(p[3])
-
 def p_funccall(p):
     r"""funccall : ID '(' rvaluelist ')'
         funccall : ID '(' empty ')'
     """
     p[0] = ast.CallFunc(p[1], p[3])
+
+def p_operator_descent(p):
+    r"""operator : empty
+                 | funccall
+    """
+    p[0] = p[1]
 
 def p_operator_proccall(p):
     r"""operator : ID rvaluelist
@@ -129,30 +124,57 @@ def p_endif(p):
     """
     pass
 
-def p_if_long(p):
-    r"""if : IF rvalue THEN '\n' body endif"""
-    p[0] = ast.If(p[2], p[5])
+def p_optelse_body(p):
+    r"""optelse : ELSE '\n' body"""
+    p[0] = p[3]
 
-def p_if_short(p):
-    r"""if : IF rvalue '\n' body '\n' endif
-        if : IF rvalue THEN operator"""
-    p[0] = ast.If(p[2], p[4])
+def p_optelse_empty(p):
+    r"""optelse : empty"""
+    p[0] = ast.OperatorSequence()
+
+def p_operator_if_then(p):
+    r"""operator : IF rvalue THEN '\n' body optelse endif"""
+    p[0] = ast.If(p[2], p[5], p[6])
+
+def p_operator_if_nonthen(p):
+    r"""operator : IF rvalue '\n' body optelse endif"""
+    p[0] = ast.If(p[2], p[4], p[5])
+
+def p_optinlineelse_empty(p):
+    r"""optinlineelse : empty"""
+    p[0] = ast.OperatorSequence()
+
+def p_optinlineelse_operator(p):
+    r"""optinlineelse : ELSE operator"""
+    p[0] = ast.OperatorSequence(p[2])
+
+def p_operator_if_inline(p):
+    r"""operator : IF rvalue THEN operator optinlineelse"""
+    p[0] = ast.If(p[2], ast.OperatorSequence(p[4]), p[5])
 
 # Function define
-def p_deffunc(p):
-    r"""deffunc : FUNCTION ID '(' varlist ')' '\n' body '\n' END FUNCTION"""
+def p_operator_deffunc(p):
+    r"""operator : FUNCTION ID '(' varlist ')' '\n' body '\n' END FUNCTION"""
     p[0] = ast.DefFunc(p[2], p[4], p[7])
 
-def p_globop(p):
-    r"""globop : body
-               | deffunc"""
-    p[0] = p[1]
-
+# Body
 def p_start(p):
-    r"""program : globop
-        body : operator
-    """
+    r"""body : operator"""
     p[0] = ast.OperatorSequence(p[1])
+
+def p_var_start(p):
+    r"""rvaluelist : rvalue
+        varlist : ID
+    """
+    p[0] = ast.ExpressionSequence(p[1])
+
+def p_append(p):
+    r"""body : body '\n' operator
+        rvaluelist : rvaluelist ',' rvalue
+        varlist : varlist ',' ID
+    """
+    p[0] = p[1].copy()
+    p[0].append(p[3])
 
 # Error rule for syntax errors
 def p_error(p):
@@ -180,18 +202,29 @@ def get_ast(code):
     return parser_globals.error_list, syntax_tree
 
 error_list, syntax_tree = get_ast("""
-; Function Fib(n)
+Function Fib(n)
     If n = 0 or n = 1
+        a = 10 + 15
         Return 1
-    ;Else
+    Else
         Return Fib(n - 2) + Fib(n - 1)
     EndIf
-; End Function
+End Function
+
+If True then b = 6
+If False then c = 5 else d = 7
+If b = 5 = 6
+    Print 2 ; "b = 5 = 6"
+End If
+
+If 1 Then
+    Print 1
+EndIf
 
 Print Fib(5)""")
 
 if error_list == []:
-    print(syntax_tree)
+    print(str(syntax_tree).lower())
 else:
     for error in error_list:
         print(error)
