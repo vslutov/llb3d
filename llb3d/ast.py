@@ -2,9 +2,12 @@
 
 """Ast for llb3d."""
 
+IDENT = 2
+
 class Expression:
 
     def __str__(self):
+        print(type(self))
         raise NotImplementedError()
 
 class IntVal(Expression):
@@ -41,7 +44,7 @@ class UnaryOp(Expression):
         self.arg = arg
 
     def __str__(self):
-        return '{op}{arg}'.format(op=self.op, arg=self.arg)
+        return '{op} {arg}'.format(op=self.op, arg=self.arg)
 
 class Assign(Expression):
 
@@ -52,6 +55,27 @@ class Assign(Expression):
     def __str__(self):
         return '{var} = {expr}'.format(var=self.var, expr=self.expr)
 
+class If(Expression):
+
+    def __init__(self, expr, body):
+        self.expr = expr
+        self.body = Ident(body)
+
+    def __str__(self):
+        return ('If {expr} Then\n{body}\nEndIf'
+                .format(expr=self.expr, body=self.body))
+
+class DefFunc(Expression):
+
+    def __init__(self, name, args, body):
+        self.name = name
+        self.args = args
+        self.body = Ident(body)
+
+    def __str__(self):
+        return ('Function {name}({args})\n{body}\nEnd Function'
+                .format(name=self.name, args=self.args, body=self.body))
+
 class CallFunc(Expression):
 
     def __init__(self, func, args):
@@ -59,25 +83,44 @@ class CallFunc(Expression):
         self.args = args
 
     def __str__(self):
-        args = ', '.join(str(expr) for expr in self.args)
-        return '{func}({args})'.format(func=self.func, args=args)
+        return '{func}({args})'.format(func=self.func, args=self.args)
+
+class CallProc(CallFunc):
+
+    def __str__(self):
+        return '{func} {args}'.format(func=self.func, args=self.args)
 
 class Sequence(Expression):
 
-    def __init__(self, *args, **kwds):
-        self.list = list(*args, **kwds)
+    def __init__(self, first=None):
+        if first is not None:
+            self.list = [first]
+        else:
+            self.list = []
 
     def copy(self):
-        result = Sequence()
+        result = type(self)()
         result.list = self.list.copy()
 
         return result
 
     def append(self, value):
-        return self.list.append(value)
+        if value is not None:
+            self.list.append(value)
+
+class OperatorSequence(Sequence):
+    def __str__(self):
+        return '\n'.join(str(elem) for elem in self.list)
+
+class ExpressionSequence(Sequence):
+    def __str__(self):
+        return ', '.join(str(elem) for elem in self.list)
+
+class Ident(OperatorSequence):
+    def __init__(self, sequence):
+        super().__init__()
+        self.list = sequence.list.copy()
 
     def __str__(self):
-        result = ''
-        for elem in self.list:
-            result += str(elem) + '\n'
-        return result
+        body = super().__str__().split('\n')
+        return '\n'.join(' ' * IDENT + line for line in body)
