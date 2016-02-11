@@ -8,26 +8,38 @@ from llb3d import ast
 
 def test_expression():
     """Test expression class."""
-    expr = ast.Expression()
+    expr1 = ast.Expression("Hello, {name}!", name='Alice')
+    assert expr1['name'] == 'Alice'
+    assert str(expr1) == "Hello, Alice!"
 
-    with raises(NotImplementedError):
-        str(expr)
+    expr2 = ast.Expression("Hello, {name}!", {'name': 'Alice'})
+    assert expr2['name'] == 'Alice'
+    assert str(expr2) == "Hello, Alice!"
 
 def test_line():
     """Test basic expression."""
     intval = ast.IntVal(123)
+    assert intval['value'] == 123
     assert str(intval) == '123'
 
     var = ast.Variable('HELLO')
+    assert var['name'] == 'HELLO'
     assert str(var) == 'HELLO'
 
     unary_op = ast.UnaryOp('-', var)
+    assert unary_op['op'] == '-'
+    assert unary_op['expr'] == var
     assert str(unary_op) == '- HELLO'
 
     binary_op = ast.BinaryOp('*', intval, unary_op)
+    assert binary_op['op'] == '*'
+    assert binary_op['left'] == intval
+    assert binary_op['right'] == unary_op
     assert str(binary_op) == '(123 * - HELLO)'
 
     assign = ast.Assign(ast.Variable('LEFT'), binary_op)
+    assert assign['var'] == ast.Variable('LEFT')
+    assert assign['expr'] == binary_op
     assert str(assign) == 'LEFT = (123 * - HELLO)'
 
 def test_sequence():
@@ -38,25 +50,27 @@ def test_sequence():
     var4 = ast.Variable('VAR4')
 
     seq1 = ast.Sequence()
-    seq1.append(var1)
-    seq1.append(var2)
-    assert seq1.list == [var1, var2]
-    assert len(seq1) == len(seq1.list)
+    seq1 = seq1.append(var1)
+    seq1 = seq1.append(var2)
+
+    assert seq1.dict['tuple'] == (var1, var2)
+    assert seq1[0] == var1
+    assert seq1[1] == var2
+
+    assert isinstance(seq1[:], ast.Sequence)
+    assert seq1[:] == seq1
+
+    assert len(seq1) == len(seq1['tuple'])
 
     with raises(NotImplementedError):
         str(seq1)
 
-    seq2 = seq1.copy()
+    seq2 = seq1.append(var4)
     assert isinstance(seq2, ast.Sequence)
-    assert seq2.list == seq1.list
-    assert seq2.list is not seq1.list
+    assert seq2.list == [var1, var2, var4]
 
     seq1.append(var3)
     assert seq1.list == [var1, var2, var3]
-
-    seq2.append(var4)
-    assert seq2.list == [var1, var2, var4]
-
 
     op_seq = ast.OperatorSequence()
     op_seq.list = seq1.list.copy()
