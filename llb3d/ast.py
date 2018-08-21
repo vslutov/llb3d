@@ -61,7 +61,8 @@ class Expression(FrozenDict):
         self.hash ^= hash(format_str) ^ hash(type(self))
         self.format_str = format_str
 
-    def __str__(self):
+    @typechecked
+    def __str__(self) -> str:
         """Implement str(self)."""
         return self.format_str.format(**self)
 
@@ -80,6 +81,7 @@ class Identifier(Expression):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('{name}', name=name)
 
+    @typechecked
     def __repr__(self):
         """Implement repr(self).
 
@@ -95,7 +97,8 @@ class Literal(Expression):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('{value}', value=value)
 
-    def __repr__(self):
+    @typechecked
+    def __repr__(self) -> str:
         """Implement repr(self)."""
         return "{cls}({value})".format(cls=type(self).__name__,
                                        value=repr(self['value']))
@@ -138,6 +141,22 @@ class StrLiteral(Literal):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(value)
 
+class UnaryOp(Expression):
+    """Unary operator."""
+
+    @typechecked
+    def __init__(self, op: str, right: Expression):
+        """Initialize self.  See help(type(self)) for accurate signature."""
+        super().__init__('{op}{right}', op=op, right=right)
+
+    @typechecked
+    def __repr__(self) -> str:
+        """Implement repr(self)."""
+        return "{cls}({op}, {right})".format(cls=type(self).__name__,
+                                             op=repr(self['op']),
+                                             right=repr(self['right'])
+                                            )
+
 class BinaryOp(Expression):
     """Binary operator."""
 
@@ -146,7 +165,8 @@ class BinaryOp(Expression):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('({left} {op} {right})', op=op, left=left, right=right)
 
-    def __repr__(self):
+    @typechecked
+    def __repr__(self) -> str:
         """Implement repr(self)."""
         return "{cls}({op}, {left}, {right})".format(cls=type(self).__name__,
                                                      op=repr(self['op']),

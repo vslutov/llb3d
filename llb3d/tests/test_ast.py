@@ -68,6 +68,20 @@ def test_string_literal():
     with raises(TypeError):
         ast.StrLiteral(10)
 
+def test_unary_operator():
+    """Test binary operator."""
+    right = ast.IntLiteral(20)
+    operator = '-'
+
+    expr = ast.UnaryOp(operator, right)
+    assert expr['op'] is operator
+    assert expr['right'] is right
+    assert str(expr) == '-20'
+    assert repr(expr) == "UnaryOp('-', {right})".format(right=repr(right))
+
+    with raises(TypeError):
+        ast.UnaryOp(operator, 'not an expression')
+
 def test_binary_operator():
     """Test binary operator."""
     left = ast.IntLiteral(10)
