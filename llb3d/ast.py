@@ -4,7 +4,7 @@
 
 import collections
 
-from .beartype import beartype
+from enforce import runtime_validation
 
 IDENT = 2
 
@@ -109,7 +109,7 @@ class IntLiteral(Literal):
     to +2147483647 (int32).
     """
 
-    @beartype
+    @runtime_validation
     def __init__(self, value: int):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(value)
@@ -121,7 +121,7 @@ class FloatLiteral(Literal):
     For example: .5, -10.1, 0.0 are all floating point values (float32).
     """
 
-    @beartype
+    @runtime_validation
     def __init__(self, value: float):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(value)
@@ -133,7 +133,7 @@ class StrLiteral(Literal):
     "What's up?", "***** GAME OVER *****", "".
     """
 
-    @beartype
+    @runtime_validation
     def __init__(self, value: str):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(value)
