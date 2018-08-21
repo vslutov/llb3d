@@ -29,7 +29,15 @@ setup(name='llb3d',
                    "Topic :: Games/Entertainment",
                    "Topic :: Software Development :: Compilers",
                    "Topic :: Software Development :: Libraries"],
-      install_requires=['pytest'],
+      install_requires=['pytest>=3.7',
+                        'ply>=3.11'],
+      extras_require={
+        'dev': [
+            'pytest>=3.7',
+            'pylint>=2.1',
+            'pytest-cov>=2.5'
+        ]
+      }
       packages=find_packages(),
       include_package_data=True,
       entry_points={'console_scripts': ['llb3d = llb3d.__main__:main']})
