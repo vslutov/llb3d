@@ -47,6 +47,11 @@ class Expression(FrozenDict):
     """Basic expression.
 
     Frozen dict, that can be printed.
+    >>> expr = Expression("Hello, {name}!", name='Alice')
+    >>> expr['name']
+    'Alice'
+    >>> str(expr)
+    'Hello, Alice!'
     """
 
     def __init__(self, format_str, *args, **kwds):
@@ -60,8 +65,21 @@ class Expression(FrozenDict):
         return self.format_str.format(**self)
 
 class Identifier(Expression):
+    """Identifier for variable or function.
 
-    """Identifier for variable or function."""
+    >>> alice = Identifier('Alice')
+    >>> str(alice)
+    'Alice'
+    """
 
-    def __init__(self, name):
+    def __init__(self, name: str) -> str:
+        """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('{name}', name=name)
+
+    def __repr__(self):
+        """Implement repr(self).
+
+        >>> print(repr(Identifier('Alice')))
+        Identifier('Alice')
+        """
+        return "Identifier('{name}')".format(name=self['name'])
