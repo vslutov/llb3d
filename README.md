@@ -2,6 +2,8 @@
 
 llb3d - LLVM Blitz3d implementation
 
+[![Build Status](https://travis-ci.org/cmc-python/modelmachine.svg?branch=master)](https://travis-ci.org/cmc-python/modelmachine)
+
 ## License
 
             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
