@@ -9,3 +9,9 @@ def test_expression():
     expr1 = ast.Expression("Hello, {name}!", name='Alice')
     assert expr1['name'] == 'Alice'
     assert str(expr1) == "Hello, Alice!"
+
+def test_edentifier():
+    """Test identifier class."""
+    expr1 = ast.Identifier("Alice")
+    assert expr1['name'] == "Alice"
+    assert str(expr1) == "Alice"

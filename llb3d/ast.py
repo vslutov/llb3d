@@ -58,3 +58,10 @@ class Expression(FrozenDict):
     def __str__(self):
         """Implement str(self)."""
         return self.format_str.format(**self)
+
+class Identifier(Expression):
+
+    """Identifier for variable or function."""
+
+    def __init__(self, name):
+        super().__init__('{name}', name=name)
