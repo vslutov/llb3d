@@ -139,11 +139,11 @@ class StrLiteral(Literal):
         super().__init__(value)
 
 class BinaryOp(Expression):
-
     """Binary operator."""
 
     @typechecked
     def __init__(self, op: str, left: Expression, right: Expression):
+        """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('({left} {op} {right})', op=op, left=left, right=right)
 
     def __repr__(self):

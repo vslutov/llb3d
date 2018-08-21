@@ -72,15 +72,14 @@ def test_binary_operator():
     """Test binary operator."""
     left = ast.IntLiteral(10)
     right = ast.IntLiteral(20)
-    op = '+'
+    operator = '+'
 
-    expr = ast.BinaryOp(op, left, right)
-    assert expr['op'] is op
+    expr = ast.BinaryOp(operator, left, right)
+    assert expr['op'] is operator
     assert expr['left'] is left
     assert expr['right'] is right
     assert str(expr) == '(10 + 20)'
     assert repr(expr) == "BinaryOp('+', {left}, {right})".format(left=repr(left), right=repr(right))
 
     with raises(TypeError):
-        ast.BinaryOp(op, left, 'not an expression')
-
+        ast.BinaryOp(operator, left, 'not an expression')
