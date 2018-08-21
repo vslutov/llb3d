@@ -1,5 +1,16 @@
+dist: trusty
+sudo: false
+
 language: python
 
+.mixins:
+- &xenial-mixin
+  dist: xenial
+  sudo: true
+  addons:
+  apt:
+    packages:
+      - libgnutls-dev
 
 jobs:
   include:
