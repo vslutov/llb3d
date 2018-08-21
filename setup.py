@@ -121,12 +121,13 @@ def setup_package():
                      "Topic :: Software Development :: Libraries"],
         platforms = ['any'],
         install_requires=['pytest>=3.7',
-                          'ply>=3.11'],
+                          'ply>=3.11',
+                          'enforce>=0.3'],
         extras_require={
           'dev': [
               'pytest>=3.7',
-              'pylint>=2.1',
               'pytest-cov>=2.5',
+              'pylint>=2.1',
               'pep257>=0.7'
           ]
         },
