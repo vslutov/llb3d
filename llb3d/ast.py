@@ -3,8 +3,7 @@
 """Ast for llb3d."""
 
 import collections
-
-from enforce import runtime_validation
+from typeguard import typechecked
 
 IDENT = 2
 
@@ -59,7 +58,7 @@ class Expression(FrozenDict):
     def __init__(self, format_str, *args, **kwds):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(*args, **kwds)
-        self.hash ^= hash(format_str)
+        self.hash ^= hash(format_str) ^ hash(type(self))
         self.format_str = format_str
 
     def __str__(self):
@@ -76,7 +75,8 @@ class Identifier(Expression):
     'Alice'
     """
 
-    def __init__(self, name: str) -> str:
+    @typechecked
+    def __init__(self, name: str):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('{name}', name=name)
 
@@ -109,7 +109,7 @@ class IntLiteral(Literal):
     to +2147483647 (int32).
     """
 
-    @runtime_validation
+    @typechecked
     def __init__(self, value: int):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(value)
@@ -121,7 +121,7 @@ class FloatLiteral(Literal):
     For example: .5, -10.1, 0.0 are all floating point values (float32).
     """
 
-    @runtime_validation
+    @typechecked
     def __init__(self, value: float):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(value)
@@ -133,7 +133,23 @@ class StrLiteral(Literal):
     "What's up?", "***** GAME OVER *****", "".
     """
 
-    @runtime_validation
+    @typechecked
     def __init__(self, value: str):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(value)
+
+class BinaryOp(Expression):
+
+    """Binary operator."""
+
+    @typechecked
+    def __init__(self, op: str, left: Expression, right: Expression):
+        super().__init__('({left} {op} {right})', op=op, left=left, right=right)
+
+    def __repr__(self):
+        """Implement repr(self)."""
+        return "{cls}({op}, {left}, {right})".format(cls=type(self).__name__,
+                                                     op=repr(self['op']),
+                                                     left=repr(self['left']),
+                                                     right=repr(self['right'])
+                                                    )

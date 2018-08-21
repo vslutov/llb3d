@@ -122,7 +122,7 @@ def setup_package():
         platforms = ['any'],
         install_requires=['pytest>=3.7',
                           'ply>=3.11',
-                          'enforce>=0.3'],
+                          'typeguard>=2.2.2'],
         extras_require={
           'dev': [
               'pytest>=3.7',

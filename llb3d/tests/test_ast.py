@@ -3,7 +3,6 @@
 """Test case for ast."""
 
 from pytest import raises
-from enforce.exceptions import RuntimeTypeError
 
 from .. import ast
 
@@ -42,7 +41,7 @@ def test_integer_literal():
     assert str(lit) == str(value)
     assert repr(lit) == 'IntLiteral({value})'.format(value=value)
 
-    with raises(RuntimeTypeError):
+    with raises(TypeError):
         ast.IntLiteral('string')
 
 def test_float_literal():
@@ -54,7 +53,7 @@ def test_float_literal():
     assert str(lit) == str(value)
     assert repr(lit) == 'FloatLiteral({value})'.format(value=value)
 
-    with raises(RuntimeTypeError):
+    with raises(TypeError):
         ast.FloatLiteral('string')
 
 def test_string_literal():
@@ -66,5 +65,22 @@ def test_string_literal():
     assert str(lit) == str(value)
     assert repr(lit) == "StrLiteral('{value}')".format(value=value)
 
-    with raises(RuntimeTypeError):
+    with raises(TypeError):
         ast.StrLiteral(10)
+
+def test_binary_operator():
+    """Test binary operator."""
+    left = ast.IntLiteral(10)
+    right = ast.IntLiteral(20)
+    op = '+'
+
+    expr = ast.BinaryOp(op, left, right)
+    assert expr['op'] is op
+    assert expr['left'] is left
+    assert expr['right'] is right
+    assert str(expr) == '(10 + 20)'
+    assert repr(expr) == "BinaryOp('+', {left}, {right})".format(left=repr(left), right=repr(right))
+
+    with raises(TypeError):
+        ast.BinaryOp(op, left, 'not an expression')
+
