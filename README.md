@@ -2,7 +2,7 @@
 
 llb3d - LLVM Blitz3d implementation
 
-[![Build Status](https://travis-ci.org/cmc-python/modelmachine.svg?branch=master)](https://travis-ci.org/cmc-python/modelmachine)
+[![Build Status](https://travis-ci.org/vslutov/llb3d.svg?branch=master)](https://travis-ci.org/vslutov/llb3d)
 
 ## License
 
