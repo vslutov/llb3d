@@ -33,11 +33,13 @@ Language parser implement by [PLY](http://www.dabeaz.com/ply/).
 The following keywords are built into Blitz, and may not be used as
 identifiers (variables, function names, labels, etc.):
 
+```
     After, And, Before, Case, Const, Data, Default, Delete, Dim, Each, Else,
     ElseIf, End, EndIf, Exit, False, Field, First, Float, For, Forever,
     Function, Global, Gosub, Goto, If, Insert, Int, Last, Local, Mod, New,
     Next, Not, Null, Or, Pi, Read, Repeat, Restore, Return, Sar, Select, Shl,
     Shr, Step, Str, Then, To, True, Type, Until, Wend, While, Xor, Include
+```
 
 ### Comments
 
@@ -48,18 +50,20 @@ follow each line in a logical manner.
 
 - The following code shows comments in use;
 
-
+```
     ; Begin the Redraw Function
     Function Redraw()
     ...
     End Function
+```
 
 - This code also shows a legal use of comments;
 
-
+```
     Function Redraw() ; Begin the Redraw Function
     ...
     End Function
+```
 
 ### Identifiers
 
