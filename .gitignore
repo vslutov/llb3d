@@ -1,8 +1,10 @@
 # Project-specific
 parser.out
 parsetab.py
+
 /venv
 /.pytest_cache
+/llb3d/version.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

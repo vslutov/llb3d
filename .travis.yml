@@ -1,0 +1,18 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+
+env:
+  SRC_DIR = llb3d
+
+# command to install dependencies
+install:
+  - pip install .[dev]
+
+# command to run tests
+script:
+  - pytest --cov ${SRC_DIR}
+  - pep257 ${SRC_DIR}
+  - pylint ${SRC_DIR}
