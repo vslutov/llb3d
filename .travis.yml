@@ -5,7 +5,7 @@ python:
   - "3.7"
 
 env:
-  SRC_DIR = llb3d
+  - SRC_DIR=llb3d
 
 # command to install dependencies
 install:

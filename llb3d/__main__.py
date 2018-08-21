@@ -10,8 +10,8 @@ def main():
     """Execute, when user call llb3d."""
     parser = argparse.ArgumentParser(description='llb3d ' + __version__)
 
-    subparsers = parser.add_subparsers(title='commands',
-                                       help='commands for compiler')
+    parser.add_subparsers(title='commands',
+                          help='commands for compiler')
 
     args = parser.parse_args()
 
