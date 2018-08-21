@@ -69,7 +69,7 @@ def test_string_literal():
         ast.StrLiteral(10)
 
 def test_unary_operator():
-    """Test binary operator."""
+    """Test unary operator."""
     right = ast.IntLiteral(20)
     operator = '-'
 
@@ -97,3 +97,18 @@ def test_binary_operator():
 
     with raises(TypeError):
         ast.BinaryOp(operator, left, 'not an expression')
+
+def test_procedure():
+    """Test procedure."""
+    procedure = ast.Identifier('Graphics')
+    args = (ast.IntLiteral(800), ast.IntLiteral(600))
+
+    statement = ast.ProcedureCall(procedure, args)
+    assert statement['procedure'] is procedure
+    assert statement['args'] is args
+    assert str(statement) == 'Graphics 800, 600'
+    assert repr(statement) == ("ProcedureCall({procedure}, {args})"
+                               .format(procedure=repr(procedure), args=repr(args)))
+
+    with raises(TypeError):
+        ast.ProcedureCall(procedure, 'not an expression')

@@ -3,6 +3,8 @@
 """Ast for llb3d."""
 
 import collections
+from typing import Tuple
+
 from typeguard import typechecked
 
 IDENT = 2
@@ -44,11 +46,12 @@ class FrozenDict(collections.Mapping):
 
         return self.dict == other.dict
 
-class Expression(FrozenDict):
-    """Basic expression.
+class Statement(FrozenDict):
+    """Basic statement.
 
     Frozen dict, that can be printed.
-    >>> expr = Expression("Hello, {name}!", name='Alice')
+
+    >>> expr = Statement("Hello, {name}!", name='Alice')
     >>> expr['name']
     'Alice'
     >>> str(expr)
@@ -65,6 +68,11 @@ class Expression(FrozenDict):
     def __str__(self) -> str:
         """Implement str(self)."""
         return self.format_str.format(**self)
+
+class Expression(Statement):
+    """Basic expression."""
+
+    pass
 
 class Identifier(Expression):
     """Identifier for variable or function.
@@ -173,3 +181,21 @@ class BinaryOp(Expression):
                                                      left=repr(self['left']),
                                                      right=repr(self['right'])
                                                     )
+
+class ProcedureCall(Statement):
+    """Procedure call."""
+
+    @typechecked
+    def __init__(self, procedure: Identifier, args: Tuple[Expression, ...]):
+        """Initialize self.  See help(type(self)) for accurate signature."""
+        args_str = ', '.join(str(arg) for arg in args)
+        super().__init__('{procedure} {args_str}', procedure=procedure,
+                         args=args, args_str=args_str)
+
+    @typechecked
+    def __repr__(self) -> str:
+        """Implement repr(self)."""
+        return "{cls}({procedure}, {args})".format(cls=type(self).__name__,
+                                                   procedure=repr(self['procedure']),
+                                                   args=repr(self['args'])
+                                                  )
