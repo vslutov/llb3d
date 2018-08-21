@@ -68,6 +68,8 @@ class Identifier(Expression):
     """Identifier for variable or function.
 
     >>> alice = Identifier('Alice')
+    >>> alice['name']
+    'Alice'
     >>> str(alice)
     'Alice'
     """
@@ -82,4 +84,60 @@ class Identifier(Expression):
         >>> print(repr(Identifier('Alice')))
         Identifier('Alice')
         """
-        return "Identifier('{name}')".format(name=self['name'])
+        return "{cls}('{name}')".format(cls=type(self).__name__, name=self['name'])
+
+class Literal(Expression):
+    """Abstract literal."""
+
+    def __init__(self, value):
+        """Initialize self.  See help(type(self)) for accurate signature."""
+        super().__init__('{value}', value=value)
+
+    def __repr__(self):
+        """Implement repr(self)."""
+        return "{cls}({value})".format(cls=type(self).__name__,
+                                       value=repr(self['value']))
+
+class IntLiteral(Literal):
+    """Integer literal.
+
+    Integer values are numeric values with no fractional part in them.
+    For example: 5, -10, 0 are integer values.
+    All integer values in your program must be in the range -2147483648
+    to +2147483647 (int32).
+    """
+
+    def __init__(self, value: int):
+        """Initialize self.  See help(type(self)) for accurate signature."""
+        if isinstance(value, int):
+            raise ValueError('IntLiteral value must be integer')
+
+        super().__init__(value)
+
+class FloatLiteral(Literal):
+    """Float literal.
+
+    Floating point values are numeric values that include a fractional part.
+    For example: .5, -10.1, 0.0 are all floating point values (float32).
+    """
+
+    def __init__(self, value: float):
+        """Initialize self.  See help(type(self)) for accurate signature."""
+        if not isinstance(value, float):
+            raise ValueError('FloatLiteral value must be float')
+
+        super().__init__(value)
+
+class StrLiteral(Literal):
+    """String literal.
+
+    Strings values are used to contain text. For example: "Hello",
+    "What's up?", "***** GAME OVER *****", "".
+    """
+
+    def __init__(self, value: str):
+        """Initialize self.  See help(type(self)) for accurate signature."""
+        if not isinstance(value, str):
+            raise ValueError('StrLiteral value must be string')
+
+        super().__init__(value)
