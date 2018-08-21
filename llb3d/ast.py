@@ -4,6 +4,8 @@
 
 import collections
 
+from .beartype import beartype
+
 IDENT = 2
 
 class FrozenDict(collections.Mapping):
@@ -107,11 +109,9 @@ class IntLiteral(Literal):
     to +2147483647 (int32).
     """
 
+    @beartype
     def __init__(self, value: int):
         """Initialize self.  See help(type(self)) for accurate signature."""
-        if isinstance(value, int):
-            raise ValueError('IntLiteral value must be integer')
-
         super().__init__(value)
 
 class FloatLiteral(Literal):
@@ -121,11 +121,9 @@ class FloatLiteral(Literal):
     For example: .5, -10.1, 0.0 are all floating point values (float32).
     """
 
+    @beartype
     def __init__(self, value: float):
         """Initialize self.  See help(type(self)) for accurate signature."""
-        if not isinstance(value, float):
-            raise ValueError('FloatLiteral value must be float')
-
         super().__init__(value)
 
 class StrLiteral(Literal):
@@ -135,9 +133,7 @@ class StrLiteral(Literal):
     "What's up?", "***** GAME OVER *****", "".
     """
 
+    @beartype
     def __init__(self, value: str):
         """Initialize self.  See help(type(self)) for accurate signature."""
-        if not isinstance(value, str):
-            raise ValueError('StrLiteral value must be string')
-
         super().__init__(value)

@@ -41,7 +41,7 @@ def test_integer_literal():
     assert str(lit) == str(value)
     assert repr(lit) == 'IntLiteral({value})'.format(value=value)
 
-    with raises(ValueError):
+    with raises(TypeError):
         ast.IntLiteral('string')
 
 def test_float_literal():
@@ -53,7 +53,7 @@ def test_float_literal():
     assert str(lit) == str(value)
     assert repr(lit) == 'FloatLiteral({value})'.format(value=value)
 
-    with raises(ValueError):
+    with raises(TypeError):
         ast.FloatLiteral('string')
 
 def test_string_literal():
@@ -65,5 +65,5 @@ def test_string_literal():
     assert str(lit) == str(value)
     assert repr(lit) == "StrLiteral('{value}')".format(value=value)
 
-    with raises(ValueError):
+    with raises(TypeError):
         ast.StrLiteral(10)
