@@ -33,5 +33,5 @@ install:
 # command to run tests
 script:
   - pytest --cov ${SRC_DIR}
-  - pep257 ${SRC_DIR}
+  - pydocstyle ${SRC_DIR}
   - pylint ${SRC_DIR}
