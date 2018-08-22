@@ -3,6 +3,8 @@
 """Test case for lexer."""
 
 from ply import lex
+from pytest import raises
+
 from llb3d import lexer
 
 class EqToken:
@@ -34,79 +36,66 @@ def test_keywords():
     """Test that keywords is tokens with type and value keywords."""
     code = " ".join(lexer.keywords)
 
-    error_list, lexems = lexer.get_lexems(code)
+    lexems = tuple(lexer.get_lexer(code))
 
-    assert error_list == []
-    assert [EqToken(a, a) for a in lexer.keywords] == lexems
+    assert tuple(EqToken(a, a) for a in lexer.keywords) == lexems
 
 def test_id():
     """Test all id from documentation."""
-    error_list, lexems = lexer.get_lexems('hello')
-    assert error_list == []
-    assert [EqToken('ID', 'HELLO')] == lexems
+    lexems = tuple(lexer.get_lexer('hello'))
+    assert (EqToken('ID', 'HELLO'), ) == lexems
 
-    error_list, lexems = lexer.get_lexems('player1')
-    assert error_list == []
-    assert [EqToken('ID', 'PLAYER1')] == lexems
+    lexems = tuple(lexer.get_lexer('player1'))
+    assert (EqToken('ID', 'PLAYER1'), ) == lexems
 
-    error_list, lexems = lexer.get_lexems('time_to_live')
-    assert error_list == []
-    assert [EqToken('ID', 'TIME_TO_LIVE')] == lexems
+    lexems = tuple(lexer.get_lexer('time_to_live'))
+    assert (EqToken('ID', 'TIME_TO_LIVE'), ) == lexems
 
-    error_list, lexems = lexer.get_lexems('t__')
-    assert error_list == []
-    assert [EqToken('ID', 'T__')] == lexems
+    lexems = tuple(lexer.get_lexer('t__'))
+    assert (EqToken('ID', 'T__'), ) == lexems
 
 def test_literal_symbol():
     """Check literal symbols."""
-    error_list, lexems = lexer.get_lexems(lexer.literals)
-    assert error_list == []
-    assert [EqToken(a, a) for a in lexer.literals] == lexems
+    lexems = tuple(lexer.get_lexer(lexer.literals))
+    assert tuple(EqToken(a, a) for a in lexer.literals) == lexems
 
 def test_literals():
     """Check literals."""
-    error_list, lexems = lexer.get_lexems('123456')
-    assert error_list == []
-    assert [EqToken('INTLIT', 123456)] == lexems
+    lexems = tuple(lexer.get_lexer('123456'))
+    assert (EqToken('INTLIT', 123456), ) == lexems
 
-    error_list, lexems = lexer.get_lexems('123.456')
-    assert error_list == []
-    assert [EqToken('FLOATLIT', 123.456)] == lexems
+    lexems = tuple(lexer.get_lexer('123.456'))
+    assert (EqToken('FLOATLIT', 123.456), ) == lexems
 
-    error_list, lexems = lexer.get_lexems('.6')
-    assert error_list == []
-    assert [EqToken('FLOATLIT', .6)] == lexems
+    lexems = tuple(lexer.get_lexer('.6'))
+    assert (EqToken('FLOATLIT', .6), ) == lexems
 
-    error_list, lexems = lexer.get_lexems('2.')
-    assert error_list == []
-    assert [EqToken('FLOATLIT', 2.0)] == lexems
+    lexems = tuple(lexer.get_lexer('2.'))
+    assert (EqToken('FLOATLIT', 2.0), ) == lexems
 
-    error_list, lexems = lexer.get_lexems('"Hello"')
-    assert error_list == []
-    assert [EqToken('STRLIT', 'Hello')] == lexems
+    lexems = tuple(lexer.get_lexer('"Hello"'))
+    assert (EqToken('STRLIT', 'Hello'), ) == lexems
 
-    error_list, lexems = lexer.get_lexems('"Hello" + "World!"')
-    assert error_list == []
-    assert [EqToken('STRLIT', 'Hello'),
+    lexems = tuple(lexer.get_lexer('"Hello" + "World!"'))
+    assert (EqToken('STRLIT', 'Hello'),
             EqToken('+', '+'),
-            EqToken('STRLIT', 'World!')] == lexems
+            EqToken('STRLIT', 'World!')) == lexems
 
 def test_comments():
     """Test comments remove."""
     code = 'for ; ever dream'
-    error_list, lexems = lexer.get_lexems(code)
-    assert error_list == []
-    assert [EqToken('FOR', 'FOR')] == lexems
+    lexems = tuple(lexer.get_lexer(code))
+    assert (EqToken('FOR', 'FOR'), ) == lexems
 
 def test_errors():
     """Test error messages."""
-    error_list, lexems = lexer.get_lexems('What?')
-    assert error_list == ["Illegal character '?' at 1:5"]
-    assert [EqToken('ID', 'WHAT')] == lexems
+    with raises(SyntaxError) as exc:
+        tuple(lexer.get_lexer('What?'))
+    assert exc.value.msg == "Illegal character '?' at 1:5"
 
-    error_list, lexems = lexer.get_lexems('\nWhat?')
-    assert error_list == ["Illegal character '?' at 2:5"]
-    assert [EqToken('\n', '\n'), EqToken('ID', 'WHAT')] == lexems
+    with raises(SyntaxError) as exc:
+        tuple(lexer.get_lexer('\nWhat?'))
+    assert exc.value.msg == "Illegal character '?' at 2:5"
 
 def test_small_program():
     """Check small program."""
@@ -115,7 +104,7 @@ def test_small_program():
         Print i%
     End"""
 
-    decode = [
+    decode = (
         EqToken('FOR', 'FOR'),
         EqToken('ID', 'I'),
         EqToken('%', '%'),
@@ -129,9 +118,8 @@ def test_small_program():
         EqToken('%', '%'),
         EqToken('\n', '\n'),
         EqToken('END', 'END')
-    ]
+    )
 
-    error_list, lexems = lexer.get_lexems(code)
+    lexems = tuple(lexer.get_lexer(code))
 
-    assert error_list == []
     assert decode == lexems

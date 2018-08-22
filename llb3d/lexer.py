@@ -32,7 +32,7 @@ tokens = (
     'ID',
 ) + keywords
 
-def find_column(lexpos):
+def find_column(lexer, lexpos):
     """Find column number for errors."""
     last_cr = lexer.globals.code.rfind('\n', 0, lexpos)
     if last_cr == -1:
@@ -43,7 +43,7 @@ def find_column(lexpos):
 def position(t):
     """Return symbol position."""
     return '{line}:{col}'.format(line=t.lineno,
-                                 col=find_column(t.lexpos))
+                                 col=find_column(t.lexer, t.lexpos))
 
 # A string containing ignored characters (spaces and tabs)
 t_ignore = ' \t\r\f\v'
@@ -62,7 +62,7 @@ def t_INTLIT(t): # noqa
 def t_STRLIT(t): # noqa
     r'".*?"'
     length = len(t.value) - 2
-    t.value = lexer.globals.code[t.lexpos + 1:t.lexpos + 1 + length]
+    t.value = t.lexer.globals.code[t.lexpos + 1:t.lexpos + 1 + length]
     return t
 
 def t_ID(t): # noqa
@@ -81,18 +81,29 @@ def t_newline(t): # noqa
 # Error handling rule
 def t_error(t):
     """Error handlings."""
-    lexer.globals.error_list.append("Illegal character '{char}' at {position}"
-                                    .format(char=t.value[0], position=position(t)))
-    lexer.skip(1)
+    t.lexer.globals.error_list.append("Illegal character '{char}' at {position}"
+                                      .format(char=t.value[0], position=position(t)))
+    t.lexer.skip(1)
 
-lexer = lex.lex()
-
-def get_lexems(code):
-    """Get array of lexems and errors."""
-    lexer.input(code.upper())
+def init_lexer(code):
+    """Init lexer."""
+    lexer = lex.lex()
     lexer.lineno = 1
     lexer.globals = LexerGlobals(code)
+    lexer.input(code.upper())
 
-    result = list(lexer)
+    return lexer
 
-    return lexer.globals.error_list, result
+def get_lexer(code):
+    """Check lex errors and get lexer."""
+    lexer = init_lexer(code)
+
+    #pylint: disable=unused-variable
+    for token in lexer:
+        pass
+
+    if lexer.globals.error_list != []:
+        raise SyntaxError("\n".join(lexer.globals.error_list))
+
+    lexer = init_lexer(code)
+    return lexer
