@@ -89,7 +89,6 @@ class Identifier(Expression):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('{name}', name=name)
 
-    @typechecked
     def __repr__(self):
         """Implement repr(self).
 
@@ -105,7 +104,6 @@ class Literal(Expression):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('{value}', value=value)
 
-    @typechecked
     def __repr__(self) -> str:
         """Implement repr(self)."""
         return "{cls}({value})".format(cls=type(self).__name__,
@@ -157,7 +155,6 @@ class UnaryOp(Expression):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('{op}{right}', op=op, right=right)
 
-    @typechecked
     def __repr__(self) -> str:
         """Implement repr(self)."""
         return "{cls}({op}, {right})".format(cls=type(self).__name__,
@@ -173,7 +170,6 @@ class BinaryOp(Expression):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__('({left} {op} {right})', op=op, left=left, right=right)
 
-    @typechecked
     def __repr__(self) -> str:
         """Implement repr(self)."""
         return "{cls}({op}, {left}, {right})".format(cls=type(self).__name__,
@@ -192,7 +188,6 @@ class ProcedureCall(Statement):
         super().__init__('{procedure} {args_str}', procedure=procedure,
                          args=args, args_str=args_str)
 
-    @typechecked
     def __repr__(self) -> str:
         """Implement repr(self)."""
         return "{cls}({procedure}, {args})".format(cls=type(self).__name__,
