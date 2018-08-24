@@ -67,8 +67,8 @@ def t_STRLIT(t):
 
 def t_ID(t):
     r'\w+'
-    if t.value in keywords:
-        t.type = t.value
+    if t.value.upper() in keywords:
+        t.type = t.value.upper()
     return t
 
 # Define a rule so we can track line numbers
@@ -90,7 +90,7 @@ def init_lexer(code):
     lexer = lex.lex()
     lexer.lineno = 1
     lexer.globals = LexerGlobals(code)
-    lexer.input(code.upper())
+    lexer.input(code)
 
     return lexer
 

@@ -40,19 +40,23 @@ def test_keywords():
 
     assert tuple(EqToken(a, a) for a in lexer.keywords) == lexems
 
+def test_keywords_case():
+    """Check keyword case insensitive."""
+    assert tuple(lexer.get_lexer('For')) == (EqToken('FOR', 'For'), )
+
 def test_id():
     """Test all id from documentation."""
     lexems = tuple(lexer.get_lexer('hello'))
-    assert (EqToken('ID', 'HELLO'), ) == lexems
+    assert (EqToken('ID', 'hello'), ) == lexems
 
-    lexems = tuple(lexer.get_lexer('player1'))
-    assert (EqToken('ID', 'PLAYER1'), ) == lexems
+    lexems = tuple(lexer.get_lexer('Player1'))
+    assert (EqToken('ID', 'Player1'), ) == lexems
 
     lexems = tuple(lexer.get_lexer('time_to_live'))
-    assert (EqToken('ID', 'TIME_TO_LIVE'), ) == lexems
+    assert (EqToken('ID', 'time_to_live'), ) == lexems
 
     lexems = tuple(lexer.get_lexer('t__'))
-    assert (EqToken('ID', 'T__'), ) == lexems
+    assert (EqToken('ID', 't__'), ) == lexems
 
 def test_literal_symbol():
     """Check literal symbols."""
@@ -85,7 +89,7 @@ def test_comments():
     """Test comments remove."""
     code = 'for ; ever dream'
     lexems = tuple(lexer.get_lexer(code))
-    assert (EqToken('FOR', 'FOR'), ) == lexems
+    assert (EqToken('FOR', 'for'), ) == lexems
 
 def test_errors():
     """Test error messages."""
@@ -100,24 +104,24 @@ def test_errors():
 def test_small_program():
     """Check small program."""
 
-    code = """For i% = 1 to 10 ; Magic for
+    code = """For i% = 1 To 10 ; Magic for
         Print i%
-    End"""
+    Next"""
 
     decode = (
-        EqToken('FOR', 'FOR'),
-        EqToken('ID', 'I'),
+        EqToken('FOR', 'For'),
+        EqToken('ID', 'i'),
         EqToken('%', '%'),
         EqToken('=', '='),
         EqToken('INTLIT', 1),
-        EqToken('TO', 'TO'),
+        EqToken('TO', 'To'),
         EqToken('INTLIT', 10),
         EqToken('\n', '\n'),
-        EqToken('ID', 'PRINT'),
-        EqToken('ID', 'I'),
+        EqToken('ID', 'Print'),
+        EqToken('ID', 'i'),
         EqToken('%', '%'),
         EqToken('\n', '\n'),
-        EqToken('END', 'END')
+        EqToken('NEXT', 'Next')
     )
 
     lexems = tuple(lexer.get_lexer(code))

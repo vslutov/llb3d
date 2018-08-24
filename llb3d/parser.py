@@ -23,9 +23,17 @@ def p_empty(_p):
     "empty : "
     pass
 
-def p_atom(p):
+def p_atom_int(p):
     r"""atom : INTLIT"""
     p[0] = ast.IntLiteral(int(p[1]))
+
+def p_atom_float(p):
+    r"""atom : FLOATLIT"""
+    p[0] = ast.FloatLiteral(float(p[1]))
+
+def p_atom_string(p):
+    r"""atom : STRLIT"""
+    p[0] = ast.StrLiteral(p[1])
 
 # Body
 def p_start(p):
