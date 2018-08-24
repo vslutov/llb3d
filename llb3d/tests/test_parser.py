@@ -35,5 +35,8 @@ def test_error():
     """Check error log."""
     with raises(SyntaxError) as exc:
         parser.get_ast('10 20')
-
     assert exc.value.msg == "Unexpected INTLIT '20' at 1:4"
+
+    with raises(SyntaxError) as exc:
+        parser.get_ast('Hello 10,')
+    assert exc.value.msg == "Unexpected EOF"
