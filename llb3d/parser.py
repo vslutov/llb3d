@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
 
-"""llb3d - Blitz3d parser."""
-
-# -*- coding: utf-8 -*-
-
 """Parser for Blitz3D language."""
 
-from llb3d import ast, lexer
+#pylint: disable=invalid-name
 
 from ply import yacc
 
-from ..lexer import tokens
+from . import ast, lexer
+
+from .lexer import tokens #pylint: disable=unused-import
 
 class ParserGlobals:
     """Global variables for parser."""
 
     def __init__(self):
+        """Global variables for parser."""
         self.error_list = []
 
 start = 'body'
 
-def p_empty(p):
+def p_empty(_p):
     "empty : "
     pass
 
@@ -35,16 +34,19 @@ def p_start(p):
 
 # Error rule for syntax errors
 def p_error(p):
+    """Error handler."""
     if not p:
-        p.parser.globals.error_list.append("Unexpected EOF")
+        parser.globals.error_list.append("Unexpected EOF")
         return
 
-    p.parser.globals.error_list.append("Unexpected '{token}' at {position}"
-                                       .format(token=p.type, position=lexer.position(p)))
+    parser.globals.error_list.append("Unexpected {type} '{value}' at {position}"
+                                     .format(type=p.type, value=p.value,
+                                             position=lexer.position(p)))
+
+parser = yacc.yacc()
 
 def get_ast(code):
-    """Get AST from the source code"""
-    parser = yacc.yacc()
+    """Get AST from the source code."""
     parser.globals = ParserGlobals()
     syntax_tree = parser.parse(lexer=lexer.get_lexer(code))
 

@@ -127,8 +127,7 @@ def setup_package():
           'dev': [
               'pytest>=3.7',
               'pytest-cov>=2.5',
-              'pylint>=2.1',
-              'pydocstyle>=2.1'
+              'pylint>=2.1'
           ]
         },
         packages=find_packages(),

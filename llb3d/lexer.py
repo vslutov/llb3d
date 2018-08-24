@@ -49,30 +49,30 @@ def position(t):
 t_ignore = ' \t\r\f\v'
 t_ignore_COMMENT = r';.*'
 
-def t_FLOATLIT(t): # noqa
+def t_FLOATLIT(t):
     r'(?:\d+\.\d*)|(?:\.\d+)'
     t.value = float(t.value)
     return t
 
-def t_INTLIT(t): # noqa
+def t_INTLIT(t):
     r'\d+'
     t.value = int(t.value, 0)
     return t
 
-def t_STRLIT(t): # noqa
+def t_STRLIT(t):
     r'".*?"'
     length = len(t.value) - 2
     t.value = t.lexer.globals.code[t.lexpos + 1:t.lexpos + 1 + length]
     return t
 
-def t_ID(t): # noqa
+def t_ID(t):
     r'\w+'
     if t.value in keywords:
         t.type = t.value
     return t
 
 # Define a rule so we can track line numbers
-def t_newline(t): # noqa
+def t_newline(t):
     r'\n'
     t.lexer.lineno += 1
     t.type = '\n'
@@ -98,8 +98,7 @@ def get_lexer(code):
     """Check lex errors and get lexer."""
     lexer = init_lexer(code)
 
-    #pylint: disable=unused-variable
-    for token in lexer:
+    for _token in lexer: #pylint: disable=unused-variable
         pass
 
     if lexer.globals.error_list != []:
