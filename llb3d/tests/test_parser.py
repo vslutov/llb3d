@@ -18,6 +18,19 @@ def test_strlit():
     """Check string literal parser."""
     assert parser.get_ast('"Hello"') == ast.StrLiteral("Hello")
 
+def test_proccall():
+    """Check procedure call."""
+    assert parser.get_ast('MyFunc') == ast.ProcedureCall(ast.Identifier("MyFunc"), tuple())
+    assert (parser.get_ast('MyFunc 10') ==
+            ast.ProcedureCall(ast.Identifier("MyFunc"), (ast.IntLiteral(10), )))
+
+    procargs = (ast.IntLiteral(10),
+                ast.FloatLiteral(15.5),
+                ast.StrLiteral('abacaba'),
+                ast.Identifier('hello'))
+    assert (parser.get_ast('MyFunc 10, 15.5, "abacaba", hello') ==
+            ast.ProcedureCall(ast.Identifier("MyFunc"), procargs))
+
 def test_error():
     """Check error log."""
     with raises(SyntaxError) as exc:
