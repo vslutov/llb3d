@@ -132,9 +132,9 @@ def setup_package():
           ]
         },
         packages=find_packages(),
-        include_package_data=True,
         entry_points={'console_scripts': ['llb3d = llb3d.__main__:main']},
-        vesrion=get_version_info()[0]
+        vesrion=get_version_info()[0],
+        zip_safe=False
     )
 
     try:

@@ -194,3 +194,29 @@ class ProcedureCall(Statement):
                                                    procedure=repr(self['procedure']),
                                                    args=repr(self['args'])
                                                   )
+
+class Body(Statement):
+    """Code block.
+
+    For example, global body or function body.
+    """
+
+    @typechecked
+    def __init__(self, statements: Tuple[Statement, ...]):
+        """Initialize self.  See help(type(self)) for accurate signature."""
+        super().__init__('Code block', statements=statements)
+
+    def __str__(self) -> str:
+        """Implement str(self)."""
+        result = ''
+        for statement in self['statements']:
+            result += '\n'.join(' ' * IDENT + string
+                                for string in str(statement).split('\n'))
+            result += '\n'
+        return result
+
+    def __repr__(self) -> str:
+        """Implement repr(self)."""
+        return "{cls}({statements})".format(cls=type(self).__name__,
+                                            statements=repr(self['statements'])
+                                           )

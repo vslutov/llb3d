@@ -112,3 +112,11 @@ def test_procedure():
 
     with raises(TypeError):
         ast.ProcedureCall(procedure, 'not an expression')
+
+def test_body():
+    """Check code blocks."""
+    body_tuple = (ast.IntLiteral(10), ast.IntLiteral(20))
+    body = ast.Body(body_tuple)
+    assert body['statements'] is body_tuple
+    assert str(body) == '  10\n  20\n'
+    assert repr(body) == 'Body({body_tuple})'.format(body_tuple=repr(body_tuple))

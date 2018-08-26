@@ -17,11 +17,34 @@ class ParserGlobals:
         """Global variables for parser."""
         self.error_list = []
 
-start = 'body'
+start = 'program'
+
+# Empty
 
 def p_empty(_p):
     "empty : "
     pass
+
+# Statements
+
+def p_statement_descent(p):
+    r"""global_statement : statement
+        local_statement : statement
+    """
+    p[0] = p[1]
+
+def p_statements_start(p):
+    r"""global_statements : global_statement
+        local_statements : local_statement
+    """
+    p[0] = ast.Body((p[1], ))
+
+def p_statement_rest(p):
+    r"""global_statements : global_statements '\n' global_statement
+        local_statements : local_statements '\n' local_statement
+    """
+    p[0] = ast.Body(p[1]['statements'] + (p[3], ))
+
 
 # Identifier
 
@@ -81,7 +104,7 @@ def p_proccall(p):
 # Body
 
 def p_start(p):
-    r"""body : statement"""
+    r"""program : global_statements"""
     p[0] = p[1]
 
 # Error rule for syntax errors
