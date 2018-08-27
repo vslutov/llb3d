@@ -12,7 +12,9 @@ def test_frosen_dict():
     assert len(frozen_dict) == 2
     assert ['a', 'b'] == sorted(frozen_dict)
     assert frozen_dict['a'] == 10
+    assert frozen_dict.a == 10
     assert frozen_dict['b'] == 20
+    assert frozen_dict.b == 20
 
     with raises(KeyError):
         print(frozen_dict['c'])
