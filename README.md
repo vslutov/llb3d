@@ -6,10 +6,11 @@ llb3d - LLVM Blitz3d implementation
 
 ## License
 
+```
             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
                     Version 2, December 2004
 
- Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+ Copyright (C) 2018 Vladimir Lutov <vslutov@yandex.ru>
 
  Everyone is permitted to copy and distribute verbatim or modified
  copies of this license document, and changing it is allowed as long
@@ -19,14 +20,15 @@ llb3d - LLVM Blitz3d implementation
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. You just DO WHAT THE FUCK YOU WANT TO.
+```
 
 ## Language
 
 Language parser implement by [PLY](http://www.dabeaz.com/ply/).
 
-    Copyright notice.
+#### Copyright notice.
 
-    Next sections has copied from [Blitz Docpack](http://www.blitzbasic.com/).
+Next sections has copied from [Blitz Docpack](http://www.blitzbasic.com/).
 
 ### Keywords
 
