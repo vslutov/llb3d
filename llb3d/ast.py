@@ -29,7 +29,7 @@ class FrozenDict(collections.Mapping):
         """Implement iter(self)."""
         return iter(self._dict)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Implement len(self)."""
         return len(self._dict)
 
@@ -37,18 +37,20 @@ class FrozenDict(collections.Mapping):
         """Implement self[key]."""
         return self._dict[key]
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Implement hash(self)."""
         return self._hash
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Return self==other."""
         if type(self) is not type(other) or hash(self) != hash(other):
             return False
 
+        #pylint: disable=protected-access
         return self._dict == other._dict
 
-    def __getattr__(self, name):
+    @typechecked
+    def __getattr__(self, name: str):
         """Return name from dict."""
         return self._dict[name]
 
