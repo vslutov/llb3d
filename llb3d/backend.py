@@ -1,26 +1,24 @@
-# from ctypes import CFUNCTYPE, c_int8
+# from ctypes import CFUNCTYPE
 #
 # import llvmlite.binding as llvm
 # from llvmlite import ir
 #
 # # Create some useful types
 # int8_t = ir.IntType(8)
-# fnty = ir.FunctionType(int8_t, tuple())
+# void_t = ir.VoidType()
+# fnty = ir.FunctionType(void_t, tuple())
+# hello_world = ir.Constant.literal_array('Hello, World!')
 #
 # # Create an empty module...
 # module = ir.Module()
-# # and declare a function named "bb_main" inside it
-# func = ir.Function(module, fnty, name="bb_main")
+# # and declare a function named "bbmain" inside it
+# bbmain = ir.Function(module, fnty, name="bbmain")
 #
 # # Now implement the function
-# block = func.append_basic_block(name="entry")
+# block = bbmain.append_basic_block(name="entry")
 # builder = ir.IRBuilder(block)
 #
-# a = builder.alloca(int8_t, name="a")
-# ten = ir.Constant(int8_t, 10)
-# builder.store(ten, a)
-# result = builder.load(a)
-# builder.ret(result)
+# builder.call('Print', (hello_world, ))
 #
 # # All these initializations are required for code generation!
 # llvm.initialize()
@@ -78,9 +76,8 @@
 # print(str(module))
 #
 # # Look up the function pointer (a Python int)
-# func_ptr = engine.get_function_address("bb_main")
+# func_ptr = engine.get_function_address("bbmain")
 #
 # # Run the function via ctypes
-# cfunc = CFUNCTYPE(c_int8)(func_ptr)
-# res = cfunc()
-# print("Result is", res)
+# cfunc = CFUNCTYPE(None)(func_ptr)
+# cfunc()

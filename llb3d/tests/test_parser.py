@@ -7,9 +7,9 @@ from pytest import raises
 from .. import parser, ast
 
 
-def single_statement(instruction: ast.Statement) -> ast.Body:
+def single_statement(instruction: ast.Statement) -> ast.Program:
     """Create body with one instruction."""
-    return ast.Body((instruction, ))
+    return ast.Program((instruction, ))
 
 def test_intlit():
     """Check integer literal parser."""
@@ -39,8 +39,8 @@ def test_proccall():
 
 def test_multiple_instruction():
     """Check multiple instruction."""
-    assert parser.get_ast('10\n20') == ast.Body((ast.IntLiteral(10),
-                                                 ast.IntLiteral(20)))
+    assert parser.get_ast('10\n20') == ast.Program((ast.IntLiteral(10),
+                                                    ast.IntLiteral(20)))
 
 def test_error():
     """Check error log."""

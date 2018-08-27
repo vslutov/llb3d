@@ -4,6 +4,7 @@
 
 import collections
 from typing import Tuple
+from textwrap import indent
 
 from typeguard import typechecked
 
@@ -208,15 +209,19 @@ class Body(Statement):
 
     def __str__(self) -> str:
         """Implement str(self)."""
-        result = ''
-        for statement in self['statements']:
-            result += '\n'.join(' ' * IDENT + string
-                                for string in str(statement).split('\n'))
-            result += '\n'
-        return result
+        result = '\n'.join(map(str, self['statements']))
+        indented = indent(result, ' ' * IDENT)
+        return indented
 
     def __repr__(self) -> str:
         """Implement repr(self)."""
         return "{cls}({statements})".format(cls=type(self).__name__,
                                             statements=repr(self['statements'])
                                            )
+
+class Program(Body):
+    """Code block without identation."""
+
+    def __str__(self) -> str:
+        """Implement str(self)."""
+        return '\n'.join(map(str, self['statements']))

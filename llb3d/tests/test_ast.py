@@ -118,5 +118,35 @@ def test_body():
     body_tuple = (ast.IntLiteral(10), ast.IntLiteral(20))
     body = ast.Body(body_tuple)
     assert body['statements'] is body_tuple
-    assert str(body) == '  10\n  20\n'
+    assert str(body) == '  10\n  20'
     assert repr(body) == 'Body({body_tuple})'.format(body_tuple=repr(body_tuple))
+
+def test_recursive_body():
+    """Check revursive code blocks."""
+    body_tuple = (ast.IntLiteral(10),
+                  ast.Body((ast.IntLiteral(20),
+                            ast.IntLiteral(30))),
+                  ast.IntLiteral(40)
+                 )
+    body = ast.Body(body_tuple)
+    assert body['statements'] is body_tuple
+    assert str(body) == '  10\n    20\n    30\n  40'
+
+def test_program():
+    """Check program block."""
+    program_tuple = (ast.IntLiteral(10), ast.IntLiteral(20))
+    program = ast.Program(program_tuple)
+    assert program['statements'] is program_tuple
+    assert str(program) == '10\n20'
+    assert repr(program) == 'Program({program_tuple})'.format(program_tuple=repr(program_tuple))
+
+def test_program_block():
+    """Check  program and code blocks."""
+    program_tuple = (ast.IntLiteral(10),
+                     ast.Body((ast.IntLiteral(20),
+                               ast.IntLiteral(30))),
+                     ast.IntLiteral(40)
+                    )
+    program = ast.Program(program_tuple)
+    assert program['statements'] is program_tuple
+    assert str(program) == '10\n  20\n  30\n40'

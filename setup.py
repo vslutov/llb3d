@@ -6,15 +6,18 @@
 Read the doc: <https://github.com/vslutov/llb3d>
 """
 
-from setuptools import setup, find_packages
-
-DOCLINES = (__doc__ or '').split("\n")
-
 import os
 import sys
 import subprocess
 import textwrap
+import pathlib
 
+from setuptools import setup, find_packages, Extension
+from setuptools.command.build_ext import build_ext as build_ext_orig
+
+DOCLINES = (__doc__ or '').split("\n")
+
+PROJECT             = 'llb3d'
 MAJOR               = 0
 MINOR               = 0
 MICRO               = 1
@@ -51,14 +54,6 @@ def get_version_info():
     FULLVERSION = VERSION
     if os.path.exists('.git'):
         GIT_REVISION = git_version()
-    elif os.path.exists('numpy/version.py'):
-        # must be a source distribution, use existing version file
-        try:
-            from numpy.version import git_revision as GIT_REVISION
-        except ImportError:
-            raise ImportError("Unable to import git_revision. Try removing " \
-                              "numpy/version.py and the build directory " \
-                              "before building.")
     else:
         GIT_REVISION = "Unknown"
 
@@ -68,7 +63,7 @@ def get_version_info():
     return FULLVERSION, GIT_REVISION
 
 
-def write_version_py(filename='llb3d/version.py'):
+def write_version_py(filename='{name}/version.py'.format(name=PROJECT)):
     cnt = """\"\"\"LLB3D version.\"\"\"
 
 SHORT_VERSION = '{version}'
@@ -91,6 +86,46 @@ if not RELEASE:
     finally:
         a.close()
 
+class CMakeExtension(Extension):
+
+    def __init__(self, name):
+        # don't invoke the original build_ext for this special extension
+        super().__init__(name, sources=[])
+
+class build_ext(build_ext_orig):
+
+    def run(self):
+        for ext in self.extensions:
+            self.build_cmake(ext)
+
+    def build_cmake(self, ext):
+        cwd = pathlib.Path().absolute()
+
+        # these dirs will be created in build_py, so if you don't have
+        # any python sources to bundle, the dirs will be missing
+        build_temp = pathlib.Path(self.build_temp)
+        build_temp.mkdir(parents=True, exist_ok=True)
+        extdir = pathlib.Path(self.get_ext_fullpath(ext.name))
+        extdir.mkdir(parents=True, exist_ok=True)
+
+        # example of cmake args
+        config = 'Debug' if self.debug else 'Release'
+        cmake_args = [
+            '-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=' + str(extdir.parent.absolute() / PROJECT),
+            '-DCMAKE_BUILD_TYPE=' + config
+        ]
+
+        # example of build args
+        build_args = [
+            '--config', config
+        ]
+
+        os.chdir(str(build_temp))
+        self.spawn(['cmake', str(cwd / ext.name)] + cmake_args)
+        if not self.dry_run:
+            self.spawn(['cmake', '--build', '.'] + build_args)
+        os.chdir(str(cwd))
+
 def setup_package():
     src_path = os.path.dirname(os.path.abspath(sys.argv[0]))
     old_path = os.getcwd()
@@ -101,7 +136,7 @@ def setup_package():
     write_version_py()
 
     metadata = dict(
-        name = 'llb3d',
+        name = PROJECT,
         maintainer = "vslutov",
         maintainer_email = "vslutov@yandex.ru",
         description = DOCLINES[0],
@@ -132,9 +167,13 @@ def setup_package():
           ]
         },
         packages=find_packages(),
-        entry_points={'console_scripts': ['llb3d = llb3d.__main__:main']},
-        vesrion=get_version_info()[0],
-        zip_safe=False
+        entry_points={'console_scripts': ['{name} = {name}.__main__:main'.format(name=PROJECT)]},
+        version=get_version_info()[0],
+        zip_safe=False,
+        ext_modules=[CMakeExtension('bbruntime')],
+        cmdclass={
+            'build_ext': build_ext,
+        }
     )
 
     try:

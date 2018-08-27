@@ -101,11 +101,11 @@ def p_proccall(p):
     else:
         p[0] = ast.ProcedureCall(p[1], p[2])
 
-# Body
+# Program
 
 def p_start(p):
     r"""program : global_statements"""
-    p[0] = p[1]
+    p[0] = ast.Program(p[1]['statements'])
 
 # Error rule for syntax errors
 def p_error(p):
