@@ -106,22 +106,21 @@ class build_ext(build_ext_orig):
         build_temp = pathlib.Path(self.build_temp)
         build_temp.mkdir(parents=True, exist_ok=True)
         extdir = pathlib.Path(self.get_ext_fullpath(ext.name))
-        extdir.mkdir(parents=True, exist_ok=True)
 
-        # example of cmake args
+        # cmake args
         config = 'Debug' if self.debug else 'Release'
         cmake_args = [
-            '-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=' + str(extdir.parent.absolute() / PROJECT),
+            '-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=' + str(extdir.parent.absolute() / PROJECT / 'bbprogram'),
             '-DCMAKE_BUILD_TYPE=' + config
         ]
 
-        # example of build args
+        # build args
         build_args = [
             '--config', config
         ]
 
         os.chdir(str(build_temp))
-        self.spawn(['cmake', str(cwd / ext.name)] + cmake_args)
+        self.spawn(['cmake', str(cwd / PROJECT / ext.name)] + cmake_args)
         if not self.dry_run:
             self.spawn(['cmake', '--build', '.'] + build_args)
         os.chdir(str(cwd))

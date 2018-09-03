@@ -5,7 +5,7 @@
 from ply import lex
 from pytest import raises
 
-from llb3d import lexer
+from .. import lexer
 
 class EqToken:
     """Utility class to check equal lexems."""

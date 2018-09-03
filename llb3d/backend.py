@@ -1,83 +1,96 @@
-# from ctypes import CFUNCTYPE
-#
-# import llvmlite.binding as llvm
-# from llvmlite import ir
-#
-# # Create some useful types
-# int8_t = ir.IntType(8)
-# void_t = ir.VoidType()
-# fnty = ir.FunctionType(void_t, tuple())
-# hello_world = ir.Constant.literal_array('Hello, World!')
-#
-# # Create an empty module...
-# module = ir.Module()
-# # and declare a function named "bbmain" inside it
-# bbmain = ir.Function(module, fnty, name="bbmain")
-#
-# # Now implement the function
-# block = bbmain.append_basic_block(name="entry")
-# builder = ir.IRBuilder(block)
-#
-# builder.call('Print', (hello_world, ))
-#
-# # All these initializations are required for code generation!
-# llvm.initialize()
-# llvm.initialize_native_target()
-# llvm.initialize_native_asmprinter()  # yes, even this one
-#
-#
-# def create_execution_engine():
-#     """
-#     Create an ExecutionEngine suitable for JIT code generation on
-#     the host CPU.  The engine is reusable for an arbitrary number of
-#     modules.
-#     """
-#     # Create a target machine representing the host
-#     target = llvm.Target.from_default_triple()
-#     target_machine = target.create_target_machine()
-#     # And an execution engine with an empty backing module
-#     backing_mod = llvm.parse_assembly("")
-#     engine = llvm.create_mcjit_compiler(backing_mod, target_machine)
-#     return engine
-#
-#
-# def optimize(module) -> None:
-#     """
-#     Optimize llvm code.
-#     """
-#     pm = llvm.create_module_pass_manager()
-#     pmb = llvm.create_pass_manager_builder()
-#     pmb.opt_level = 3
-#     pmb.populate(pm)
-#     pm.run(module)
-#
-#
-# def compile_ir(engine: llvm.ExecutionEngine, llvm_ir: str):
-#     """
-#     Compile the LLVM IR string with the given engine.
-#     The compiled module object is returned.
-#     """
-#     # Create a LLVM module object from the IR
-#     module = llvm.parse_assembly(llvm_ir)
-#     module.verify()
-#     # Now add the module and make sure it is ready for execution
-#     engine.add_module(module)
-#     optimize(module)
-#     engine.finalize_object()
-#     engine.run_static_constructors()
-#     return module
-#
-#
-# engine = create_execution_engine()
-#
-# # Print the module IR
-# llvm_ir = str(module)
-# module = compile_ir(engine, llvm_ir)
-# print(str(module))
-#
-# # Look up the function pointer (a Python int)
-# func_ptr = engine.get_function_address("bbmain")
-#
-# # Run the function via ctypes
-# cfunc = CFUNCTYPE(None)(func_ptr)
-# cfunc()
+import tempfile
+import pathlib
+import shutil
+import glob
+import subprocess
+import sys
+
+from llvmlite import ir, binding
+
+SOURCE_DIRECTORY = pathlib.Path(__file__).parent.resolve() / 'bbprogram'
+SOURCE_FILENAME = 'bbprogram.s'
+EXECUTABLE_FILENAME = 'bbprogram'
+
+# All these initializations are required for code generation!
+binding.initialize()
+binding.initialize_native_target()
+binding.initialize_native_asmprinter()  # yes, even this one
+
+# Create some useful types
+int8_t = ir.IntType(8)
+int32_t = ir.IntType(32)
+p_int8_t = ir.PointerType(int8_t)
+void_t = ir.VoidType()
+bbmain_signature = ir.FunctionType(void_t, tuple())
+
+class Backend:
+
+    """Backend class: compile ast to llvm ir."""
+
+    def __init__(self):
+        """Init backend."""
+        self.debug = False
+
+        # Create an empty module...
+        self.source_module = ir.Module()
+
+        self.init_runtime()
+
+        # and declare a function named "bbmain" inside it
+        bbmain = ir.Function(self.source_module, bbmain_signature, name="bbmain")
+
+        # Now implement the function
+        block = bbmain.append_basic_block(name="entry")
+        self.builder = ir.IRBuilder(block)
+
+        self.builder.ret_void()
+
+    def init_runtime(self):
+        """Init runtime libraries."""
+        self.runtime = {
+            'Print': ir.Function(self.source_module, ir.FunctionType(void_t, (p_int8_t, )), 'Print')
+        }
+
+    def emit_assembly(self) -> str:
+        """Optimize and compile module."""
+        llvm_module = binding.parse_assembly(str(self.source_module))
+        llvm_module.verify()
+
+        # Optimize
+        pm = binding.create_module_pass_manager()
+        pmb = binding.create_pass_manager_builder()
+        pmb.opt_level = 2
+        pmb.populate(pm)
+        pm.run(llvm_module)
+
+        target_machine = binding.Target.from_default_triple().create_target_machine()
+
+        return target_machine.emit_assembly(llvm_module)
+
+    def emit_executable(self, executable_filename: str):
+        with tempfile.TemporaryDirectory() as source_dir:
+            source_dir = pathlib.Path(source_dir)
+            with open(source_dir / SOURCE_FILENAME, 'w') as output:
+                output.write(self.emit_assembly())
+            for filename in glob.iglob(str(SOURCE_DIRECTORY / '*')):
+                shutil.copy2(filename, source_dir)
+
+            build_dir = source_dir / 'build'
+            build_dir.mkdir(parents=True, exist_ok=True)
+
+
+            # cmake args
+            config = 'Debug' if self.debug else 'Release'
+            cmake_args = (
+                '-DCMAKE_BUILD_TYPE=' + config,
+            )
+
+            # build args
+            build_args = (
+                '--config', config
+            )
+
+            subprocess.run(('cmake', '..') + cmake_args, stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(), cwd=build_dir, check=True)
+            subprocess.run(('cmake', '--build', '.') + build_args, stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(), cwd=build_dir, check=True)
+
+            shutil.copy2(build_dir / EXECUTABLE_FILENAME, executable_filename)
