@@ -5,4 +5,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Werror")
 
 file(GLOB PROJECT_SOURCES *.c)
 
-add_library(bbruntime STATIC ${PROJECT_SOURCES})
+find_package(ICU 55.1 COMPONENTS io uc REQUIRED)
+include_directories(${ICU_INCLUDE_DIRS})
+
+add_library(bbruntime_static STATIC ${PROJECT_SOURCES})
+add_library(bbruntime_shared SHARED ${PROJECT_SOURCES})

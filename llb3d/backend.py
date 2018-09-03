@@ -71,10 +71,10 @@ class Backend:
     def emit_executable(self, executable_filename: str):
         with tempfile.TemporaryDirectory() as source_dir:
             source_dir = pathlib.Path(source_dir)
-            with open(source_dir / SOURCE_FILENAME, 'w') as output:
+            with open(str(source_dir / SOURCE_FILENAME), 'w') as output:
                 output.write(self.emit_assembly())
             for filename in glob.iglob(str(SOURCE_DIRECTORY / '*')):
-                shutil.copy2(filename, source_dir)
+                shutil.copy2(filename, str(source_dir))
 
             build_dir = source_dir / 'build'
             build_dir.mkdir(parents=True, exist_ok=True)
@@ -94,4 +94,4 @@ class Backend:
             subprocess.run(('cmake', '..') + cmake_args, stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(), cwd=build_dir, check=True)
             subprocess.run(('cmake', '--build', '.') + build_args, stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(), cwd=build_dir, check=True)
 
-            shutil.copy2(build_dir / EXECUTABLE_FILENAME, executable_filename)
+            shutil.copy2(str(build_dir / EXECUTABLE_FILENAME), executable_filename)

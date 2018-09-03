@@ -1,10 +1,12 @@
 #ifndef BBIO_H
 #define BBIO_H
 
-void
-Print(char *);
+#include <umachine.h>
 
 void
-Write(char *);
+Print(UChar *);
+
+void
+Write(UChar *);
 
 #endif

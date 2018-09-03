@@ -108,9 +108,12 @@ class build_ext(build_ext_orig):
         extdir = pathlib.Path(self.get_ext_fullpath(ext.name))
 
         # cmake args
+        BBPROGRAM_SOURCE = str(extdir.parent.absolute() / PROJECT / 'bbprogram')
         config = 'Debug' if self.debug else 'Release'
         cmake_args = [
-            '-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=' + str(extdir.parent.absolute() / PROJECT / 'bbprogram'),
+            '-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=' + BBPROGRAM_SOURCE,
+            '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + BBPROGRAM_SOURCE,
+            '-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=' + BBPROGRAM_SOURCE,
             '-DCMAKE_BUILD_TYPE=' + config
         ]
 

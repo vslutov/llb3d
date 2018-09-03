@@ -1,13 +1,15 @@
 #include "bbio.h"
+#include "bbglobals.h"
 
-#include <stdio.h>
+#include <unicode/ustdio.h>
 
 void
-Print(char *str) {
-  puts(str);
+Print(UChar *str) {
+  Write(str);
+  u_fputc('\n', ustdout);
 }
 
 void
-Write(char *str) {
-  fputs(str, stdout);
+Write(UChar *str) {
+  u_file_write(str, u_strlen(str), ustdout);
 }
