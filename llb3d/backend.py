@@ -16,16 +16,17 @@ binding.initialize()
 binding.initialize_native_target()
 binding.initialize_native_asmprinter()  # yes, even this one
 
-# Create some useful types
-int8_t = ir.IntType(8)
-int32_t = ir.IntType(32)
-p_int8_t = ir.PointerType(int8_t)
-void_t = ir.VoidType()
-bbmain_signature = ir.FunctionType(void_t, tuple())
-
 class Backend:
 
     """Backend class: compile ast to llvm ir."""
+
+    # Create some useful types
+    int8_t = ir.IntType(8)
+    cstr_t = ir.PointerType(int8_t)
+    int32_t = ir.IntType(32)
+    float32_t = ir.FloatType()
+    void_t = ir.VoidType()
+    bbmain_signature = ir.FunctionType(void_t, tuple())
 
     def __init__(self):
         """Init backend."""
@@ -37,7 +38,7 @@ class Backend:
         self.init_runtime()
 
         # and declare a function named "bbmain" inside it
-        bbmain = ir.Function(self.source_module, bbmain_signature, name="bbmain")
+        bbmain = ir.Function(self.source_module, self.bbmain_signature, name="bbmain")
 
         # Now implement the function
         block = bbmain.append_basic_block(name="entry")
@@ -48,7 +49,7 @@ class Backend:
     def init_runtime(self):
         """Init runtime libraries."""
         self.runtime = {
-            'Print': ir.Function(self.source_module, ir.FunctionType(void_t, (p_int8_t, )), 'Print')
+            'Print': ir.Function(self.source_module, ir.FunctionType(self.void_t, (self.cstr_t, )), 'Print')
         }
 
     def emit_assembly(self) -> str:

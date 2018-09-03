@@ -8,6 +8,9 @@ from textwrap import indent
 from inspect import signature
 
 from typeguard import typechecked
+from llvmlite import ir, binding
+
+from .backend import Backend
 
 IDENT = 2
 
@@ -84,6 +87,11 @@ class Statement(FrozenDict):
         return ("{cls}({params_str})"
                 .format(cls=type(self).__name__, params_str=params_str))
 
+    @typechecked
+    def traverse(self, backend: Backend):
+        """Traverse ast and update backend."""
+        raise NotImplementedError('Not implemented')
+
 class Expression(Statement):
     """Basic expression."""
 
@@ -125,6 +133,11 @@ class IntLiteral(Literal):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(value)
 
+    @typechecked
+    def traverse(self, backend: Backend) -> Expression:
+        """Traverse ast and update backend."""
+        return ir.Constant(backend.int32_t, self.value)
+
 class FloatLiteral(Literal):
     """Float literal.
 
@@ -136,6 +149,11 @@ class FloatLiteral(Literal):
     def __init__(self, value: float):
         """Initialize self.  See help(type(self)) for accurate signature."""
         super().__init__(value)
+
+    @typechecked
+    def traverse(self, backend: Backend) -> Expression:
+        """Traverse ast and update backend."""
+        return ir.Constant(backend.float32_t, self.value)
 
 class StrLiteral(Literal):
     """String literal.
