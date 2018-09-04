@@ -1,12 +1,12 @@
 #ifndef BBIO_H
 #define BBIO_H
 
-#include <umachine.h>
+#include <unicode/umachine.h>
 
 void
-Print(UChar *);
+Print(const UChar *);
 
 void
-Write(UChar *);
+Write(const UChar *);
 
 #endif

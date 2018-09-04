@@ -6,7 +6,10 @@
 void
 bbmain(void);
 
-int32_t
+void
 bbinit(void);
+
+void
+bbstart(void);
 
 #endif

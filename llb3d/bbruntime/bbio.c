@@ -4,12 +4,12 @@
 #include <unicode/ustdio.h>
 
 void
-Print(UChar *str) {
+Print(const UChar *str) {
   Write(str);
   u_fputc('\n', ustdout);
 }
 
 void
-Write(UChar *str) {
+Write(const UChar *str) {
   u_file_write(str, u_strlen(str), ustdout);
 }
