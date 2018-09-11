@@ -3,14 +3,16 @@ sudo: false
 
 language: python
 
+addons:
+  apt:
+    update: true
+    packages:
+      - cmake
+      - libicu-dev
+
 .mixins:
 - &xenial-mixin
   dist: xenial
-  sudo: true
-  addons:
-  apt:
-    packages:
-      - libgnutls-dev
 
 jobs:
   include:
