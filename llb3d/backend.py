@@ -5,8 +5,7 @@ import glob
 import subprocess
 import sys
 import os
-import ctypes
-import multiprocessing
+import stat
 
 from llvmlite import ir, binding
 
@@ -58,6 +57,7 @@ class Backend:
         block = bbmain.append_basic_block(name="entry")
         self.builder = ir.IRBuilder(block)
 
+        """
         python_string = 'Привет, Мир!\00'
         ir_type = ir.ArrayType(uchar_t, len(python_string))
         ir_const = ir.Constant.literal_array([ir.Constant(uchar_t, ord(symbol)) for symbol in python_string])
@@ -69,6 +69,7 @@ class Backend:
 
         llvm_address = self.builder.gep(ir_global, (int32_zero, int32_zero), inbounds=True)
         self.builder.call(self.runtime['Print'], (llvm_address, ))
+        """
 
         self.builder.ret_void()
 
@@ -109,33 +110,11 @@ class Backend:
         llvm_module = self.optimize()
         return str(llvm_module)
 
-    def run(self) -> None:
-        """Run program."""
-        binding.check_jit_execution()
-
-        load_shared_library('libbbruntime_shared.so')
-        load_shared_library('libicuuc.so')
-        load_shared_library('libicuio.so')
-
-        llvm_module = self.optimize()
-        target_machine = self.get_target_machine()
-        engine = binding.create_mcjit_compiler(llvm_module, target_machine)
-        engine.finalize_object()
-        engine.run_static_constructors()
-
-        # main_ptr = engine.get_function_address('bbstart')
-        bbinit_ptr = binding.address_of_symbol('bbinit')
-        bbinit = ctypes.CFUNCTYPE(None)(bbinit_ptr)
-        bbinit()
-
-        bbmain_ptr = engine.get_function_address('bbmain')
-        bbmain = ctypes.CFUNCTYPE(None)(bbmain_ptr)
-        bbmain()
-
     def emit_executable(self, executable_filename: str):
+        """Create executable file."""
         with tempfile.TemporaryDirectory() as source_dir:
             source_dir = pathlib.Path(source_dir)
-            with open(str(source_dir / SOURCE_FILENAME), 'w') as output:
+            with open(source_dir / SOURCE_FILENAME, 'w') as output:
                 output.write(self.emit_assembly())
             for filename in glob.iglob(str(SOURCE_DIRECTORY / '*')):
                 shutil.copy2(filename, str(source_dir))
@@ -158,4 +137,18 @@ class Backend:
             subprocess.run(('cmake', '..') + cmake_args, stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(), cwd=build_dir, check=True)
             subprocess.run(('cmake', '--build', '.') + build_args, stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(), cwd=build_dir, check=True)
 
-            shutil.copy2(str(build_dir / EXECUTABLE_FILENAME), executable_filename)
+            shutil.copy2(build_dir / EXECUTABLE_FILENAME, executable_filename)
+
+    def run(self, *args, check=True, **kwargs) -> subprocess.CompletedProcess:
+        """Run program in a subprocess.
+
+        Return completed process.
+        All keyword arguments pass to subprocess.run.
+        check is set to True by default.
+        """
+        with tempfile.NamedTemporaryFile() as executable_file:
+            executable_filename = executable_file.name
+            executable_file.close()
+            self.emit_executable(executable_filename)
+            os.chmod(executable_filename, stat.S_IXUSR)
+            return subprocess.run(args=(executable_filename, ) + args, check=check, **kwargs)

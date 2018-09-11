@@ -2,6 +2,8 @@
 
 """Test case for backend."""
 
+import subprocess
+
 from ..backend import Backend
 from .. import backend as backend_module
 from llvmlite import ir, binding
@@ -37,13 +39,16 @@ def test_emit_assembly():
     asm = backend.emit_assembly()
     assert 'bbmain' in asm
 
-def test_run(capfd):
+def test_run():
     """Check that we can run llvm program."""
     backend = Backend()
-    backend.run()
-    out, err = capfd.readouterr()
-    assert out == ''
-    assert err == ''
+
+    run = backend.run()
+    assert isinstance(run, subprocess.CompletedProcess)
+    assert run.stdout is None
+
+    run = backend.run(stdout=subprocess.PIPE, encoding='utf-8')
+    assert run.stdout == ''
 
 def test_emit_executable(tmpdir):
     """Check that we can create empty executable."""
