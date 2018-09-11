@@ -11,8 +11,8 @@ addons:
       - libicu-dev
 
 .mixins:
-- &xenial-mixin
-  dist: xenial
+  - &xenial-mixin
+    dist: xenial
 
 jobs:
   include:
