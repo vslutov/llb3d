@@ -4,17 +4,20 @@
 
 import subprocess
 
+from llvmlite import ir, binding
+
 from ..backend import Backend
 from .. import backend as backend_module
-from llvmlite import ir, binding
 
 def test_types():
     """Check that we have types."""
-    assert isinstance(backend_module.uchar_t, ir.IntType)
-    assert isinstance(backend_module.ustr_t, ir.PointerType)
-    assert isinstance(backend_module.int32_t, ir.IntType)
-    assert isinstance(backend_module.float32_t, ir.FloatType)
-    assert isinstance(backend_module.void_t, ir.VoidType)
+    assert isinstance(backend_module.UCHAR_T, ir.IntType)
+    assert isinstance(backend_module.USTR_T, ir.PointerType)
+    assert isinstance(backend_module.INT32_T, ir.IntType)
+    assert isinstance(backend_module.FLOAT32_T, ir.FloatType)
+    assert isinstance(backend_module.VOID_T, ir.VoidType)
+    assert isinstance(backend_module.BBMAIN_SIGNATURE, ir.FunctionType)
+    assert isinstance(backend_module.INT32_ZERO, ir.Constant)
 
 def test_init_backend():
     """Check that after init builder and runtime is available."""

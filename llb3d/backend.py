@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+"""Backend module for llb3d compiler."""
+
 import tempfile
 import pathlib
 import shutil
@@ -28,14 +32,14 @@ def load_shared_library(name):
         binding.load_library_permanently(str(SYSTEM_SHARED / name))
 
 # Create some useful types
-uchar_t = ir.IntType(16)
-ustr_t = ir.PointerType(uchar_t)
-int32_t = ir.IntType(32)
-float32_t = ir.FloatType()
-void_t = ir.VoidType()
-bbmain_signature = ir.FunctionType(void_t, tuple())
+UCHAR_T = ir.IntType(16)
+USTR_T = ir.PointerType(UCHAR_T)
+INT32_T = ir.IntType(32)
+FLOAT32_T = ir.FloatType()
+VOID_T = ir.VoidType()
+BBMAIN_SIGNATURE = ir.FunctionType(VOID_T, tuple())
 
-int32_zero = ir.Constant(int32_t, 0)
+INT32_ZERO = ir.Constant(INT32_T, 0)
 
 class Backend:
 
@@ -51,7 +55,7 @@ class Backend:
         self.init_runtime()
 
         # and declare a function named "bbmain" inside it
-        bbmain = ir.Function(self.source_module, bbmain_signature, name="bbmain")
+        bbmain = ir.Function(self.source_module, BBMAIN_SIGNATURE, name="bbmain")
 
         # Now implement the function
         block = bbmain.append_basic_block(name="entry")
@@ -59,15 +63,16 @@ class Backend:
 
         """
         python_string = 'Привет, Мир!\00'
-        ir_type = ir.ArrayType(uchar_t, len(python_string))
-        ir_const = ir.Constant.literal_array([ir.Constant(uchar_t, ord(symbol)) for symbol in python_string])
+        ir_type = ir.ArrayType(UCHAR_T, len(python_string))
+        ir_const = ir.Constant.literal_array([ir.Constant(UCHAR_T, ord(symbol))
+                                              for symbol in python_string])
         ir_global = ir.GlobalVariable(self.source_module, ir_type, 'hello')
         ir_global.global_constant = True
         ir_global.linkage = 'internal'
         ir_global.initializer = ir_const
         ir_global.align = 2
 
-        llvm_address = self.builder.gep(ir_global, (int32_zero, int32_zero), inbounds=True)
+        llvm_address = self.builder.gep(ir_global, (INT32_ZERO, INT32_ZERO), inbounds=True)
         self.builder.call(self.runtime['Print'], (llvm_address, ))
         """
 
@@ -76,7 +81,7 @@ class Backend:
     def init_runtime(self):
         """Init runtime libraries."""
         self.runtime = {
-            'Print': ir.Function(self.source_module, ir.FunctionType(void_t, (ustr_t, )), 'Print')
+            'Print': ir.Function(self.source_module, ir.FunctionType(VOID_T, (USTR_T, )), 'Print')
         }
 
     def optimize(self, opt_level=2) -> binding.ModuleRef:
@@ -85,11 +90,11 @@ class Backend:
         llvm_module.verify()
 
         # Optimize
-        pm = binding.create_module_pass_manager()
-        pmb = binding.create_pass_manager_builder()
-        pmb.opt_level = opt_level
-        pmb.populate(pm)
-        pm.run(llvm_module)
+        pass_manager = binding.create_module_pass_manager()
+        pass_manager_builder = binding.create_pass_manager_builder()
+        pass_manager_builder.opt_level = opt_level
+        pass_manager_builder.populate(pass_manager)
+        pass_manager.run(llvm_module)
 
         return llvm_module
 
@@ -134,8 +139,12 @@ class Backend:
                 '--config', config
             )
 
-            subprocess.run(('cmake', '..') + cmake_args, stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(), cwd=build_dir, check=True)
-            subprocess.run(('cmake', '--build', '.') + build_args, stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(), cwd=build_dir, check=True)
+            subprocess.run(('cmake', '..') + cmake_args,
+                           stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(),
+                           cwd=build_dir, check=True)
+            subprocess.run(('cmake', '--build', '.') + build_args,
+                           stdout=sys.stdout.fileno(), stderr=sys.stderr.fileno(),
+                           cwd=build_dir, check=True)
 
             shutil.copy2(build_dir / EXECUTABLE_FILENAME, executable_filename)
 
