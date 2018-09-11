@@ -13,10 +13,7 @@ addons:
 .mixins:
   - &xenial-mixin
     dist: xenial
-    addons:
-      apt:
-        packages:
-          - libgnutls-dev
+    sudo: true
 
 jobs:
   include:
