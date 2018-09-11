@@ -2,6 +2,7 @@
 #include "bbglobals.h"
 
 #include <unicode/ustdio.h>
+#include <unicode/ustring.h>
 
 void
 Print(const UChar *str) {
