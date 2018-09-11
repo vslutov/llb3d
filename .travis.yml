@@ -20,8 +20,6 @@ jobs:
     - python: 3.6
     - <<: *xenial-mixin
       python: 3.7
-    - <<: *xenial-mixin
-      python: nightly
 
 env:
   - SRC_DIR=llb3d
