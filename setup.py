@@ -161,7 +161,8 @@ def setup_package():
         install_requires=['pytest>=3.7',
                           'ply>=3.11',
                           'llvmlite>=0.24',
-                          'typeguard>=2.2.2'],
+                          'typeguard>=2.2.2',
+                          'wheel>=0.31.1'],
         extras_require={
           'dev': [
               'pytest>=3.7',
