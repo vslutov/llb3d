@@ -21,7 +21,7 @@ PROJECT             = 'llb3d'
 MAJOR               = 0
 MINOR               = 0
 MICRO               = 1
-ISRELEASED          = False
+ISRELEASED          = True
 VERSION             = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 
 # Return the git revision as a string
