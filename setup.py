@@ -20,9 +20,9 @@ DOCLINES = (__doc__ or '').split("\n")
 PROJECT             = 'llb3d'
 MAJOR               = 0
 MINOR               = 0
-MICRO               = 2
-ISRELEASED          = False
-VERSION             = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
+PATCH               = 3
+ISRELEASED          = os.environ.get('TRAVIS_BUILD_STAGE_NAME') == 'Deploy'
+VERSION             = '%d.%d.%d' % (MAJOR, MINOR, PATCH)
 
 # Return the git revision as a string
 def git_version():
