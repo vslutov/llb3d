@@ -14,12 +14,11 @@ addons:
   - &xenial-mixin
     dist: xenial
     sudo: true
-
-jobs:
-  include:
-    - python: 3.6
-    - <<: *xenial-mixin
-      python: 3.7
+  # command to run tests
+  - &run-test-mixin
+    script:
+      - pytest --cov "${SRC_DIR}"
+      - pylint "${SRC_DIR}"
 
 env:
   - SRC_DIR=llb3d
@@ -29,14 +28,18 @@ install:
   - python setup.py sdist bdist_egg bdist_wheel
   - pip install -e ".[dev]"
 
-# command to run tests
-script:
-  - pytest --cov "${SRC_DIR}"
-  - pylint "${SRC_DIR}"
-
-deploy:
-  provider: pypi
-  user: "${PYPI_LOGIN}"
-  password: "${PYPI_PASSWORD}"
-  on:
-    tags: true
+jobs:
+  include:
+    - python: 3.6
+      <<: *run-test-mixin
+    - <<: *xenial-mixin
+      python: 3.7
+      <<: *run-test-mixin
+    - stage: deploy
+      on:
+        tags: true
+      script: skip
+      deploy:
+        provider: pypi
+        user: "${PYPI_LOGIN}"
+        password: "${PYPI_PASSWORD}"
