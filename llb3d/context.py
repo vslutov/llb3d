@@ -24,10 +24,10 @@ class ContextProvider:
 
     Should use with current_context proxy:
 
-    >>> context = Context()
-    >>> with ContextProvider(context):
-    >>>     with current_context() as inner_context:
-    >>>         assert current_context() is context
+    >>> outer_context = Context()
+    >>> with ContextProvider(outer_context):
+    ...     with current_context() as inner_context:
+    ...         assert inner_context is outer_context
     """
 
     def __init__(self, context: Context):
@@ -50,10 +50,10 @@ class ContextProxy:
 
     Should use with ContextProvider:
 
-    >>> context = Context()
-    >>> with ContextProvider(context):
-    >>>     with current_context() as inner_context:
-    >>>         assert current_context() is context
+    >>> outer_context = Context()
+    >>> with ContextProvider(outer_context):
+    ...     with current_context() as inner_context:
+    ...         assert inner_context is outer_context
     """
 
     def __enter__(self):
@@ -67,9 +67,9 @@ def current_context():
     """Get current context manager.
 
     Should use with ContextProvider:
-    >>> context = Context()
-    >>> with ContextProvider(context):
-    >>>     with current_context() as inner_context:
-    >>>         assert current_context() is context
+    >>> outer_context = Context()
+    >>> with ContextProvider(outer_context):
+    ...     with current_context() as inner_context:
+    ...         assert inner_context is outer_context
     """
     return ContextProxy()
