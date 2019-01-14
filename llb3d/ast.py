@@ -87,8 +87,6 @@ class Statement(FrozenDict):
 class Expression(Statement):
     """Basic expression."""
 
-    pass
-
 class Identifier(Expression):
     """Identifier for variable or function.
 

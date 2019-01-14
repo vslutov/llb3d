@@ -23,7 +23,6 @@ start = 'program'
 
 def p_empty(_p):
     "empty : "
-    pass
 
 # Statements
 
