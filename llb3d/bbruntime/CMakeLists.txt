@@ -4,9 +4,10 @@ project(bbruntime LANGUAGES C)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Werror")
 
 file(GLOB PROJECT_SOURCES *.c)
+file(GLOB ICU_STATIC_LIBRARIES "/opt/icu/lib/libicu*.a")
 
-find_package(ICU 52.1 COMPONENTS io uc REQUIRED)
-include_directories(${ICU_INCLUDE_DIRS})
+include_directories("/opt/icu/include/")
 
-add_library(bbruntime_static STATIC ${PROJECT_SOURCES})
-add_library(bbruntime_shared SHARED ${PROJECT_SOURCES})
+add_library(bbruntime STATIC ${PROJECT_SOURCES})
+add_custom_command(TARGET bbruntime
+                   POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${ICU_STATIC_LIBRARIES} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})

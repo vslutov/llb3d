@@ -112,8 +112,6 @@ class build_ext(build_ext_orig):
         config = 'Debug' if self.debug else 'Release'
         cmake_args = [
             '-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=' + BBPROGRAM_SOURCE,
-            '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + BBPROGRAM_SOURCE,
-            '-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=' + BBPROGRAM_SOURCE,
             '-DCMAKE_BUILD_TYPE=' + config
         ]
 
@@ -158,8 +156,7 @@ def setup_package():
                      "Topic :: Software Development :: Libraries",
                      "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)"],
         platforms = ['any'],
-        install_requires=['pytest>=3.7',
-                          'ply>=3.11',
+        install_requires=['ply>=3.11',
                           'llvmlite>=0.24',
                           'typeguard>=2.2.2',
                           'wheel>=0.31.1'],
